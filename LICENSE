@@ -2,8 +2,8 @@ MIT License
 
 Copyright (c) 2026 Keith Adler
 
-THIS LICENSE COVERS THE SOFTWARE ONLY. It does not cover the musical work
-or sound recording included in this repository. See README.md.
+THIS LICENSE COVERS THE SOFTWARE ONLY. The musical work and sound recording
+in audio/ are licensed separately under CC BY-NC 4.0. See LICENSE-MUSIC.md.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

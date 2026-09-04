@@ -66,10 +66,16 @@ vectors when zoomed past 1× so magnification stays sharp.
 
 ## Credits and licensing
 
-**The software** is MIT licensed. See `LICENSE`.
+Two licenses, because there are two different things in here.
 
-**The music is not.** "The One Who Let You Go", written by Keith Adler
-(BMI, IPI 551038589), performed as Marty Gregg, from *The Aura Principle Soundtrack*.
-© 2026 Keith Adler. **All rights reserved.** The recording in `audio/` is included so
-the explainer has something real to draw, and is not licensed for reuse,
-redistribution, sampling or any other purpose.
+**The software** is MIT. See [`LICENSE`](LICENSE).
+
+**The music** is [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+See [`LICENSE-MUSIC.md`](LICENSE-MUSIC.md).
+
+> "The One Who Let You Go", written by Keith Adler (BMI, IPI 551038589), performed by
+> Marty Gregg, from *The Aura Principle Soundtrack*. © 2026 Keith Adler.
+
+Share it, remix it, put it under your video — free, with credit, for anything
+non-commercial. Commercial rights are retained in full: for advertising, film, TV,
+games, monetized releases or sync, contact Keith Adler for a separate license.
