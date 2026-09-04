@@ -1,0 +1,1918 @@
+<title>How Audio CDs Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500&display=swap">
+<style>
+  :root{
+    --ground:#0A0C11; --panel:#12151D; --panel-2:#171B25;
+    --rule:#242A36; --rule-soft:#1B202B;
+    --ink:#E6E9F0; --ink-dim:#8B93A3; --ink-faint:#5A6170;
+    --brass:#E0A94A; --brass-dim:#8A6A2E;
+    --display:'Archivo Narrow','Arial Narrow',Helvetica,sans-serif;
+    --body:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  @keyframes sheenspin{ to{ transform:rotate(360deg) } }
+  @keyframes pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .app{max-width:1200px;margin:0 auto;padding:18px 24px 34px;display:flex;flex-direction:column;gap:14px}
+
+  .masthead{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px 20px;flex-wrap:wrap;
+    margin:0 -24px;padding:9px 24px;background:var(--ground);border-bottom:1px solid var(--rule)}
+  .wordmark{display:flex;align-items:baseline;gap:12px;min-width:0;margin-right:2px}
+  .wordmark h1{font-family:var(--display);font-weight:700;font-size:22px;line-height:1;letter-spacing:.05em;text-transform:uppercase;margin:0;white-space:nowrap}
+  .wordmark h1 em{font-style:normal;color:var(--brass);text-shadow:0 0 18px rgba(224,169,74,.55)}
+  .wordmark p{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint)}
+  .masthead-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+
+  button{font:inherit;cursor:pointer}
+  .btn{background:var(--panel-2);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:7px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
+  .btn:hover{border-color:var(--brass-dim);color:var(--brass)}
+  .btn-primary{background:var(--brass);border-color:var(--brass);color:#150F03;font-weight:500;min-width:104px;box-shadow:0 0 22px -4px rgba(224,169,74,.65),inset 0 1px 0 rgba(255,255,255,.28)}
+  .btn-primary:hover{background:#EFBB5E;border-color:#EFBB5E;color:#150F03;box-shadow:0 0 30px -2px rgba(224,169,74,.9),inset 0 1px 0 rgba(255,255,255,.35)}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+  .toolbar{display:contents}
+  .tgroup{display:flex;align-items:center;gap:9px}
+  .tlabel{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .stepper{display:flex;align-items:center;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+  .stepper button{background:transparent;border:0;color:var(--ink-faint);padding:5px 10px;font-family:var(--mono);font-size:13px;line-height:1}
+  .stepper button:hover{color:var(--brass)}
+  .stepper span{min-width:50px;text-align:center;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink);padding:6px 2px;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+.seg{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+  .seg button{background:transparent;border:0;color:var(--ink-faint);padding:5px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.11em;transition:background .15s,color .15s}
+  .seg button + button{border-left:1px solid var(--rule)}
+  .seg button:hover{color:var(--ink)}
+  .seg button[aria-pressed="true"]{background:var(--panel-2);color:var(--brass);text-shadow:0 0 12px rgba(224,169,74,.75);box-shadow:inset 0 0 18px -6px rgba(224,169,74,.55)}
+  .cmp{display:grid;grid-template-columns:1fr auto auto auto;gap:5px 11px;align-items:baseline}
+  .cmp .h{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);text-align:right}
+  .cmp .h.on{color:var(--brass)}
+  .cmp .k{font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)}
+  .cmp .v{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;text-align:right;color:var(--ink-dim)}
+  .cmp .v.on{color:var(--ink)}
+  @media (max-width:1320px){ .wordmark p{display:none} }
+  @media (max-width:1080px){ .tlabel.opt{display:none} }
+
+  .console{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+  .stage{position:relative;background:var(--panel);border:1px solid var(--rule);border-radius:4px;aspect-ratio:1/1;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(224,169,74,.05), 0 18px 60px -24px rgba(34,168,214,.30), inset 0 1px 0 rgba(255,255,255,.03)}
+  .sheen{position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:50%;
+    background:conic-gradient(from 0deg,#2B4CC8,#22A8D6,#8A63E8,#E8548F,#F0B24A,#8A63E8,#22A8D6,#2B4CC8);
+    filter:blur(30px);opacity:.11;mix-blend-mode:screen;
+    -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent 28%,rgba(0,0,0,.9) 40%,rgba(0,0,0,.55) 48%,transparent 60%);
+    mask-image:radial-gradient(circle at 50% 50%,transparent 28%,rgba(0,0,0,.9) 40%,rgba(0,0,0,.55) 48%,transparent 60%);
+    animation:sheenspin 40s linear infinite}
+  .stage > canvas#disc{position:relative;z-index:2}
+  .stage .pip,.stage .veil,.stage .stage-note{z-index:4}
+  .stage.drag{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+  .stage > canvas#disc{display:block;width:100%;height:100%;cursor:crosshair}
+  .stage-note{position:absolute;left:14px;bottom:12px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);pointer-events:none}
+  .veil{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,12,17,.9);font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+  .veil.on{display:flex}
+
+  .pip{position:absolute;right:14px;top:14px;width:176px;border:1px solid var(--rule);border-radius:3px;background:#0B0E15;overflow:hidden;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.7),0 0 0 1px rgba(224,169,74,.10),0 0 26px -8px rgba(34,168,214,.5)}
+  .pip canvas{display:block;width:176px;height:176px}
+  .pip-bar{display:flex;justify-content:space-between;gap:8px;padding:5px 7px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);background:var(--panel)}
+  .pip-bar b{color:var(--brass);font-weight:500}
+
+  .rail{display:flex;flex-direction:column;gap:14px}
+  .block{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:13px 15px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.028)}
+  .block h2{margin:0 0 10px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;justify-content:space-between;gap:10px}
+  .block h2 span{color:var(--ink-dim)}
+  .readout{display:flex;flex-direction:column}
+  .row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--rule-soft)}
+  .row:last-child{border-bottom:0;padding-bottom:0}
+  .row dt{font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap}
+  .row dd{margin:0;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row dd.big{font-size:15px;color:var(--brass);text-shadow:0 0 14px rgba(224,169,74,.55)}
+  .row dd.title{font-family:var(--body);font-size:13px;letter-spacing:0}
+  dl{margin:0}
+
+  .toc{max-height:132px;overflow-y:auto;margin:0 -6px}
+  .toc button{width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:2px;padding:5px 6px;text-align:left;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-dim);transition:background .12s,color .12s}
+  .toc button:hover{background:var(--panel-2);color:var(--ink)}
+  .toc button[aria-current="true"]{color:var(--brass)}
+  .toc button[aria-current="true"] .tno{background:var(--brass);color:#150F03}
+  .tno{display:inline-block;text-align:center;border-radius:2px;background:var(--panel-2);color:var(--ink-faint);font-size:10px;padding:1px 0}
+  .tdur{color:var(--ink-faint);font-size:11px}
+
+  .ramp{height:9px;border-radius:2px;margin-bottom:6px}
+  .ramp-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .note{margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-dim);max-width:60ch}
+  .note b{color:var(--ink);font-weight:500}
+
+  .transport{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:12px 16px 11px;display:flex;flex-direction:column;gap:10px;position:sticky;bottom:0;z-index:5;box-shadow:0 -10px 24px rgba(10,12,17,.7)}
+  .transport-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .clock{font-family:var(--mono);font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .clock span{color:var(--ink-faint);font-size:14px}
+  .transport-meta{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+  .strip{position:relative;height:74px;background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:3px;overflow:hidden;box-shadow:inset 0 0 28px -10px rgba(34,168,214,.5)}
+  .strip canvas{display:block;width:100%;height:100%;cursor:pointer}
+  .strip-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+
+.notes{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:16px 18px 15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 12px 40px -28px rgba(224,169,74,.7);display:grid;grid-template-columns:66px minmax(0,1fr) minmax(300px,430px);gap:0 20px;align-items:start}
+  .notes-fig{border-left:1px solid var(--rule-soft);padding-left:18px;min-height:172px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+  .notes-fig svg{display:block;width:100%;height:auto}
+  .notes-fig canvas{display:block;width:100%;height:auto;border-radius:2px}
+  .fig-cap{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);text-align:center}
+  .fig-ctl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .fig-ctl input[type=range]{flex:1;accent-color:var(--brass);height:3px}
+  .fig-ctl b{color:var(--brass);font-weight:500;min-width:62px;text-align:right;font-variant-numeric:tabular-nums}
+  .hold{margin-left:auto}
+  .hold[aria-pressed="true"]{color:var(--brass);border-color:var(--brass-dim)}
+  .notes-num{font-family:var(--display);font-weight:700;font-size:44px;line-height:.86;color:var(--brass);letter-spacing:.01em;text-shadow:0 0 26px rgba(224,169,74,.5)}
+  .notes-of{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-top:6px}
+  .notes-at{font-family:var(--mono);font-size:10px;font-variant-numeric:tabular-nums;color:var(--ink-faint);margin-top:2px}
+  .notes-body h3{margin:2px 0 6px;font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:.02em;color:var(--ink);text-wrap:balance}
+  .notes-body p{margin:0;font-size:13.5px;line-height:1.62;color:var(--ink-dim);max-width:74ch}
+  .notes-body p b{color:var(--ink);font-weight:500}
+  .notes-nav{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .notes-nav button{background:var(--panel-2);border:1px solid var(--rule);border-radius:3px;color:var(--ink-faint);font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;padding:6px 12px;transition:color .15s,border-color .15s}
+  .notes-nav button:hover{color:var(--brass);border-color:var(--brass-dim)}
+  .notes-dots{display:flex;gap:4px;margin-left:6px}
+  .notes-dots i{width:14px;height:3px;border-radius:2px;background:var(--rule);display:block;transition:background .2s}
+  .notes-dots i.on{background:var(--brass);box-shadow:0 0 10px rgba(224,169,74,.9)}
+  @media (max-width:1000px){ .notes{grid-template-columns:66px minmax(0,1fr)} .notes-fig{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid var(--rule-soft);padding-top:14px;margin-top:12px} }
+.quiz{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:15px 18px 8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.028)}
+  .qlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:0 26px}
+  .qlist details{border-bottom:1px solid var(--rule-soft);padding:9px 0}
+  .qlist summary{cursor:pointer;font-size:13.5px;line-height:1.5;color:var(--ink);list-style:none;display:flex;gap:10px;align-items:baseline}
+  .qlist summary::-webkit-details-marker{display:none}
+  .qlist summary::before{content:"?";font-family:var(--mono);font-size:10px;color:var(--brass);border:1px solid var(--brass-dim);border-radius:2px;padding:0 5px;flex:none;transition:background .15s,color .15s}
+  .qlist details[open] summary{color:var(--brass)}
+  .qlist details[open] summary::before{content:"A";background:var(--brass);color:#150F03;border-color:var(--brass);box-shadow:0 0 12px rgba(224,169,74,.6)}
+  .qlist summary:hover{color:var(--brass)}
+  .qlist details p{margin:9px 0 3px 27px;font-size:12.8px;color:var(--ink-dim);line-height:1.62;max-width:62ch}
+  .qlist details p b{color:var(--ink);font-weight:500}
+  .colophon{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);border-top:1px solid var(--rule);padding-top:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  @media (max-width:900px){
+    .masthead{position:static;margin:0;padding:9px 0}
+    .console{grid-template-columns:minmax(0,1fr)}
+    .wordmark h1{font-size:21px}
+    .app{padding:22px 16px 32px}
+    .pip{width:132px}.pip canvas{width:132px;height:132px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition-duration:0s!important} .sheen{animation:none}}
+  input[type=file]{display:none}
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <div class="wordmark">
+      <h1>How Audio <em>CDs</em> Work</h1>
+      <p>Actual size</p>
+    </div>
+    <div class="tgroup">
+      <span class="tlabel">Zoom</span>
+      <div class="stepper">
+        <button id="zOut" aria-label="Zoom out">&minus;</button>
+        <span id="zVal">1.0&times;</span>
+        <button id="zIn" aria-label="Zoom in">+</button>
+      </div>
+    </div>
+    <div class="tgroup">
+      <span class="tlabel opt">Window</span>
+      <div class="stepper">
+        <button id="pOut" aria-label="Longer window">&minus;</button>
+        <span id="pVal">1.00 s</span>
+        <button id="pIn" aria-label="Shorter window">+</button>
+      </div>
+    </div>
+    <div class="tgroup">
+      <span class="tlabel opt">Master</span>
+      <div class="seg" role="group" aria-label="Master">
+        <button id="mVintage" aria-pressed="false">1990</button>
+        <button id="mModern" aria-pressed="true">As delivered</button>
+        <button id="mLoud" aria-pressed="false">2026 loud</button>
+      </div>
+    </div>
+    <div class="masthead-actions">
+      <button class="btn" id="loadBtn">Open file</button>
+    </div>
+  </header>
+
+  <div class="notes">
+    <div>
+      <div class="notes-num" id="nNum">01</div>
+      <div class="notes-of" id="nOf">of 12</div>
+      <div class="notes-at" id="nAt">00:00</div>
+    </div>
+    <div class="notes-body">
+      <h3 id="nTitle">Liner notes</h3>
+      <p id="nText"></p>
+      <div class="notes-nav">
+        <button id="nPrev">Previous</button>
+        <button id="nNext">Next</button>
+        <span class="notes-dots" id="nDots"></span>
+        <button class="hold" id="nHold" aria-pressed="false">Following</button>
+      </div>
+    </div>
+    <div class="notes-fig" id="nFig"></div>
+  </div>
+
+  <div class="console">
+    <div class="stage" id="stage">
+      <div class="sheen"></div>
+      <canvas id="disc"></canvas>
+      <div class="pip">
+        <canvas id="pip"></canvas>
+        <div class="pip-bar"><span>Groove unrolled</span><span><b id="pipSpan">&mdash;</b></span></div>
+      </div>
+      <div class="stage-note" id="stageNote">Drop a WAV or MP3 anywhere &middot; click the spiral to seek</div>
+      <div class="veil" id="veil">Loading</div>
+    </div>
+
+    <div class="rail">
+      <section class="block">
+        <h2>Source</h2>
+        <dl class="readout">
+          <div class="row"><dt>Title</dt><dd class="title" id="rFile">&mdash;</dd></div>
+          <div class="row" id="rowArtist"><dt>Artist</dt><dd class="title" id="rArtist">&mdash;</dd></div>
+          <div class="row" id="rowAlbum"><dt>From</dt><dd class="title" id="rAlbum">&mdash;</dd></div>
+          <div class="row"><dt>On the disc</dt><dd id="rFmt">&mdash;</dd></div>
+          <div class="row" id="rowSrc"><dt>Master</dt><dd class="title" id="rSrc">&mdash;</dd></div>
+          <div class="row"><dt>Length</dt><dd id="rLen">&mdash;</dd></div>
+          <div class="row"><dt>Peak</dt><dd id="rPeak">&mdash;</dd></div>
+        </dl>
+      </section>
+
+        <p class="note" id="rateNote"></p>
+      </section>
+
+      <section class="block">
+        <h2>Read head</h2>
+        <dl class="readout">
+          <div class="row"><dt>Position</dt><dd class="big" id="rPos">00:00:00</dd></div>
+          <div class="row"><dt>Revolution</dt><dd id="rRev">&mdash;</dd></div>
+          <div class="row"><dt>Radius</dt><dd id="rRad">&mdash;</dd></div>
+          <div class="row"><dt>Spin</dt><dd id="rRpm">&mdash;</dd></div>
+          <div class="row"><dt>Level</dt><dd id="rLevel">&mdash;</dd></div>
+        </dl>
+      </section>
+
+      <section class="block">
+        <h2>What it takes up <span id="discShare"></span></h2>
+        <dl class="readout">
+          <div class="row"><dt>Playing time</dt><dd id="rProg">&mdash;</dd></div>
+          <div class="row"><dt>Revolutions</dt><dd id="rRevs">&mdash;</dd></div>
+          <div class="row"><dt>Radius band</dt><dd id="rBand">&mdash;</dd></div>
+          <div class="row"><dt>Pit track</dt><dd id="rPit">&mdash;</dd></div>
+        </dl>
+        <p class="note">Everything past the dashed line is bare disc. A CD holds <b>74:00</b>, so one song this length is a tight coil near the hub &mdash; the rest of the platter never gets written.</p>
+      </section>
+
+      <section class="block">
+        <h2>Loudness</h2>
+        <div class="cmp">
+          <span class="k"></span><span class="h" id="hVin">1990</span><span class="h on" id="hMod">Yours</span><span class="h" id="hLou">2026</span>
+          <span class="k">Peak</span><span class="v" id="vVinPk">&mdash;</span><span class="v on" id="vModPk">&mdash;</span><span class="v" id="vLouPk">&mdash;</span>
+          <span class="k">Gated RMS</span><span class="v" id="vVinRms">&mdash;</span><span class="v on" id="vModRms">&mdash;</span><span class="v" id="vLouRms">&mdash;</span>
+          <span class="k">Crest</span><span class="v" id="vVinCr">&mdash;</span><span class="v on" id="vModCr">&mdash;</span><span class="v" id="vLouCr">&mdash;</span>
+        </div>
+        <p class="note">Ribbon thickness is absolute level against one shared reference, so a louder master really is a fatter groove. Crest factor is peak minus gated RMS &mdash; the headroom a master leaves itself.</p>
+        <p class="note" id="vinNote"><b>Both alternates are simulated.</b> <b>1990</b> restores transients &mdash; a 1&nbsp;ms peak follower against a 200&nbsp;ms average, boosting whatever sticks out &mdash; plus shelf cuts of 2.5&nbsp;dB below 70&nbsp;Hz and 2&nbsp;dB above 8&nbsp;kHz, then peak-normalized to &minus;1&nbsp;dBFS. <b>2026 loud</b> is the opposite: drive into a 0.5&nbsp;ms brickwall limiter with a &minus;0.3&nbsp;dBFS ceiling, chasing a &minus;9&nbsp;dBFS average. Limiting cannot be perfectly undone, so 1990 shows the era's dynamics, not what an engineer would have printed.</p>
+      </section>
+
+      <section class="block">
+        <h2>Index points <span id="tocCount"></span></h2>
+        <div class="toc" id="toc"></div>
+      </section>
+
+      <section class="block">
+        <h2>Reading the disc</h2>
+        <div class="ramp" id="ramp"></div>
+        <div class="ramp-scale"><span>80 Hz</span><span>640 Hz</span><span>5 kHz</span></div>
+        <p class="note">Ribbon thickness is peak level, drawn asymmetrically &mdash; left channel toward the hub, right toward the rim. Color is the spectral center of that slice: bass runs blue, cymbals and sibilance run gold.</p>
+        <p class="note">Real geometry: track pitch <b>1.6&nbsp;&micro;m</b>, program area <b>25&ndash;58&nbsp;mm</b> radius (a <b>120&nbsp;mm</b> / 4.7&nbsp;in disc), scanned at a constant <b>1.2&nbsp;m/s</b>. The Red Book standard is written in metric, so these are the figures as specified rather than converted. Radii here are true; the drawing compresses <b>20,500</b> revolutions into <b>28</b> visible turns.</p>
+      </section>
+    </div>
+  </div>
+
+  <section class="quiz">
+    <h2 style="margin:0 0 6px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;justify-content:space-between">Check yourself <span style="color:var(--ink-dim)">answer first, then open</span></h2>
+    <div class="qlist" id="qlist"></div>
+  </section>
+
+  <div class="transport">
+    <div class="transport-head">
+      <button class="btn btn-primary" id="playBtn">Play</button>
+      <div class="clock"><span id="cPos">00:00:00</span> <span>/</span> <span id="cLen">00:00:00</span></div>
+      <div class="transport-meta">MM:SS:FF &middot; 75 frames per second</div>
+    </div>
+    <div class="strip" id="strip"><canvas id="linear"></canvas></div>
+    <div class="strip-labels"><span>Start of track</span><span>Unrolled spiral</span><span>End</span></div>
+  </div>
+
+  <div class="colophon">
+    <span>&ldquo;The One Who Let You Go&rdquo; &middot; Written by Keith Adler (BMI, IPI&nbsp;551038589) &middot; Performed as Marty Gregg &middot; The Aura Principle Soundtrack &middot; &copy;&nbsp;2026 Keith Adler. All rights reserved.</span>
+    <span>Decoded in the browser &middot; space to play &middot; click to seek</span>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="audio/*,.wav,.mp3,.flac,.m4a,.aac,.ogg,.aif,.aiff">
+<script type="text/plain" id="trackData">__TRACK_B64__</script>
+<script>
+(function(){
+  'use strict';
+  var TAU = Math.PI * 2;
+  var BUCKETS = 18000, TURNS = 28;
+  var FFTN = 1024, FRAMES = 4200, BANDS = 44;
+  var BAND_LO = 40, BAND_HI = 16000, CENT_LO = 80, CENT_HI = 5000;
+  var SILENCE = 0.0032, MIN_GAP = 1.0, MIN_TRACK = 1.5;
+
+  // Red Book geometry, all real
+  var R0 = 25.0;          // mm, inner edge of the program area
+  var R1 = 57.8;          // mm, outer edge
+  var PITCH = 0.0016;     // mm, 1.6 micrometer track pitch
+  var CLV = 1200;         // mm/s, constant linear velocity
+  var FULL_REVS = (R1 - R0) / PITCH;
+  var FULL_LEN = Math.PI * (R1*R1 - R0*R0) / PITCH;   // mm of pit track
+  var FULL_TIME = FULL_LEN / CLV;                     // seconds a full disc holds
+
+  var DOT = '\u00B7', EMPTY = '\u2014';
+  var PIP_PX = 256, PIP_CSS = 176;
+
+  var TRACK = {
+    title: 'The One Who Let You Go',
+    artist: 'Marty Gregg',
+    album: 'The Aura Principle Soundtrack',
+    source: '48 kHz / 16-bit WAV',
+    writer: 'Keith Adler ' + DOT + ' BMI ' + DOT + ' IPI 551038589'
+  };
+
+  // ---------- diffraction ramp ----------
+  var STOPS = [[0,0x2B,0x4C,0xC8],[0.30,0x22,0xA8,0xD6],[0.55,0x8A,0x63,0xE8],[0.78,0xE8,0x54,0x8F],[1,0xF0,0xB2,0x4A]];
+  function ramp(t){
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    for (var i = 0; i < STOPS.length - 1; i++){
+      var a = STOPS[i], b = STOPS[i+1];
+      if (t <= b[0]){
+        var k = (t - a[0]) / (b[0] - a[0] || 1);
+        return [Math.round(a[1]+(b[1]-a[1])*k), Math.round(a[2]+(b[2]-a[2])*k), Math.round(a[3]+(b[3]-a[3])*k)];
+      }
+    }
+    var l = STOPS[STOPS.length-1]; return [l[1],l[2],l[3]];
+  }
+  var LUT = new Uint8Array(768);
+  for (var ri = 0; ri < 256; ri++){ var rc = ramp(ri/255); LUT[ri*3]=rc[0]; LUT[ri*3+1]=rc[1]; LUT[ri*3+2]=rc[2]; }
+  document.getElementById('ramp').style.background = 'linear-gradient(90deg,' +
+    STOPS.map(function(s){ return 'rgb('+s[1]+','+s[2]+','+s[3]+') '+(s[0]*100)+'%'; }).join(',') + ')';
+
+  // ---------- FFT ----------
+  function FFT(n){
+    this.n = n;
+    var bits = Math.round(Math.log(n)/Math.LN2);
+    this.rev = new Uint32Array(n);
+    for (var i = 0; i < n; i++){ var r = 0; for (var j = 0; j < bits; j++) r |= ((i>>j)&1) << (bits-1-j); this.rev[i] = r; }
+    this.c = new Float32Array(n>>1); this.s = new Float32Array(n>>1);
+    for (var k = 0; k < (n>>1); k++){ this.c[k] = Math.cos(-TAU*k/n); this.s[k] = Math.sin(-TAU*k/n); }
+  }
+  FFT.prototype.run = function(re, im){
+    var n = this.n, i, j, t, k;
+    for (i = 0; i < n; i++){ j = this.rev[i]; if (j > i){ t=re[i];re[i]=re[j];re[j]=t; t=im[i];im[i]=im[j];im[j]=t; } }
+    for (var size = 2; size <= n; size <<= 1){
+      var half = size>>1, step = n/size;
+      for (i = 0; i < n; i += size){
+        for (j = i, k = 0; j < i+half; j++, k += step){
+          var c = this.c[k], s = this.s[k], jh = j+half;
+          var tr = re[jh]*c - im[jh]*s, ti = re[jh]*s + im[jh]*c;
+          re[jh] = re[j]-tr; im[jh] = im[j]-ti; re[j] += tr; im[j] += ti;
+        }
+      }
+    }
+  };
+  var fft = new FFT(FFTN), hann = new Float32Array(FFTN);
+  for (var w = 0; w < FFTN; w++) hann[w] = 0.5 - 0.5*Math.cos(TAU*w/(FFTN-1));
+
+  // ---------- elements ----------
+  var discCv = document.getElementById('disc'), dctx = discCv.getContext('2d');
+  var linCv = document.getElementById('linear'), lctx = linCv.getContext('2d');
+  var pipCv = document.getElementById('pip'), pctx = pipCv.getContext('2d');
+  var stage = document.getElementById('stage'), strip = document.getElementById('strip');
+  var veil = document.getElementById('veil'), playBtn = document.getElementById('playBtn');
+  var fileInput = document.getElementById('fileInput'), tocEl = document.getElementById('toc');
+  var el = {};
+  ['rFile','rArtist','rAlbum','rowArtist','rowAlbum','rFmt','rSrc','rowSrc','rLen','rPeak','rPos','rRev','rRad','rRpm','rLevel',
+   'rProg','rRevs','rBand','rPit','discShare','cPos','cLen','tocCount','stageNote',
+   'zVal','pVal','pipSpan','rateNote','hMod','hVin','hLou','vModPk','vVinPk','vLouPk','vModRms','vVinRms','vLouRms','vModCr','vVinCr','vLouCr','nNum','nOf','nAt','nTitle','nText','nDots','nFig'].forEach(function(id){ el[id] = document.getElementById(id); });
+
+  // ---------- state ----------
+  var actx = new (window.AudioContext || window.webkitAudioContext)();
+  // decodeAudioData resamples to the context rate, and on most Macs that is 48 kHz.
+  // A CD is 44,100 Hz by definition, so decode into a context that is too - which is
+  // also exactly the resampling a 48 kHz master would get on its way to a disc.
+  var CD_RATE = 44100;
+  var decodeCtx = null;
+  try { decodeCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, 1, CD_RATE); } catch(e){ decodeCtx = null; }
+  function decodeAtCdRate(ab){
+    var ctx = decodeCtx || actx;
+    return ctx.decodeAudioData(ab);
+  }
+  var buffer = null, data = null, src = null;
+  var masters = { modern:null, vintage:null, loud:null }, active = 'modern', refPeak = 1;
+  var playing = false, offset = 0, startedAt = 0, raf = 0;
+  var curIdx = -1;
+  var zoom = 1, zoomTarget = 1, autoZoomed = false, pipWindow = 1.0;
+  var discStatic = document.createElement('canvas'), linStatic = document.createElement('canvas');
+  var geo = { cx:0, cy:0, rIn:0, rOut:0, rHub:0, R:0, dpr:1, pitch:0 };
+
+  // ---------- format ----------
+  function pad(n){ return (n<10?'0':'')+n; }
+  function msf(s){ if(!isFinite(s)||s<0)s=0; return pad(Math.floor(s/60))+':'+pad(Math.floor(s%60))+':'+pad(Math.floor((s%1)*75)); }
+  function ms(s){ return Math.floor(s/60)+':'+pad(Math.floor(s%60)); }
+  function dbfs(v){ if(v<=1e-7) return '-inf dBFS'; var d=20*Math.log10(v); return (d>-0.05&&d<0?'-0.0':d.toFixed(1))+' dBFS'; }
+  function commas(n){ return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  // ---------- real disc geometry ----------
+  // At constant linear velocity the groove sweeps equal area per second, so
+  // radius grows with the square root of elapsed pit-track length.
+  function radiusAt(sec){ return Math.sqrt(R0*R0 + CLV*sec*PITCH/Math.PI); }
+  function revsAt(sec){ return (radiusAt(sec) - R0) / PITCH; }
+  function uAt(sec){ return (radiusAt(sec) - R0) / (R1 - R0); }   // 0..1 across the program area
+  function songU(t){ return data ? uAt(t * data.duration) : 0; }
+  function radOf(u){ return geo.rIn + (geo.rOut - geo.rIn) * u; }
+  function angOf(u){ return u * TURNS * TAU - Math.PI/2; }
+  // invert: spiral parameter u back to song time
+  function timeAtU(u){
+    var mm = R0 + (R1 - R0) * u;
+    return (mm*mm - R0*R0) * Math.PI / (CLV * PITCH);
+  }
+
+  // ---------- liner notes, keyed to where the head is ----------
+  var MONO = "'IBM Plex Mono',ui-monospace,Menlo,monospace";
+  function fig(inner){ return '<svg viewBox="0 0 420 168" role="img">' + inner + '</svg>'; }
+  function tx(x,y,str,size,fill,anchor){
+    return '<text x="'+x+'" y="'+y+'" font-family="'+MONO+'" font-size="'+(size||9)+'" letter-spacing=".07em" fill="'+(fill||'var(--ink-faint)')+'" text-anchor="'+(anchor||'start')+'">'+str+'</text>';
+  }
+  function head(x,y,rot,fill){
+    return '<polygon points="0,-3.4 7,0 0,3.4" fill="'+(fill||'var(--ink-faint)')+'" transform="translate('+x+','+y+') rotate('+rot+')"/>';
+  }
+  // a spiral drawn as chained half-circles of growing radius
+  function spiralPath(cx,cy,r0,r1,turns){
+    var n = turns*2, d = 'M '+(cx+r0)+' '+cy, r = r0, step = (r1-r0)/n, side = -1;
+    for (var i=0;i<n;i++){
+      var ra = r, rb = r+step;
+      d += ' A '+((ra+rb)/2)+' '+((ra+rb)/2)+' 0 0 1 '+(cx+side*rb)+' '+cy;
+      r = rb; side = -side;
+    }
+    return d;
+  }
+
+  var NOTES = [
+    { at:0.000, t:'Why it spins at all',
+      b:'The read head is fixed. It rides a sled that only creeps sideways, so spinning the disc is how you get 1.2 meters of track past a stationary lens every second while the lens itself barely moves. Over this whole song the sled travels <b>3.3 mm</b>. The track travels <b>343 m</b> &mdash; a hundred times further.',
+      cap:'Fixed lens, moving disc',
+      d: fig(
+        '<circle cx="104" cy="84" r="68" fill="none" stroke="var(--rule)"/>' +
+        '<circle cx="104" cy="84" r="32" fill="none" stroke="var(--brass)" stroke-opacity=".45" stroke-width="11"/>' +
+        '<circle cx="104" cy="84" r="13" fill="var(--panel-2)" stroke="var(--rule)"/>' +
+        '<path d="M104 6 A78 78 0 0 1 175 55" fill="none" stroke="var(--ink-faint)" stroke-opacity=".7"/>' +
+        head(175,55,58) +
+        tx(196,52,'disc spins 458 rpm') +
+        '<rect x="98" y="112" width="12" height="9" rx="1.5" fill="var(--ink)"/>' +
+        '<line x1="104" y1="112" x2="104" y2="104" stroke="var(--brass)" stroke-width="1.6"/>' +
+        '<line x1="86" y1="134" x2="122" y2="134" stroke="var(--ink-dim)"/>' +
+        head(122,134,0,'var(--ink-dim)') +
+        tx(104,150,'sled: 3.3 mm total','9','var(--ink-dim)','middle') +
+        '<rect x="212" y="74" width="196" height="7" rx="3" fill="var(--brass)" fill-opacity=".5"/>' +
+        tx(212,66,'TRACK PAST THE LENS','9','var(--brass)') +
+        tx(408,96,'343 m','11','var(--ink)','end') +
+        '<rect x="212" y="112" width="2" height="7" rx="1" fill="var(--ink-dim)"/>' +
+        tx(212,104,'SLED TRAVEL') + tx(222,119,'3.3 mm','9','var(--ink-dim)')) },
+
+    { at:0.066, t:'Why a spiral, not rings',
+      b:'Concentric circles would force the head to jump back at the end of every revolution. One continuous spiral means ordinary playback never seeks at all &mdash; the sled just drifts outward about <b>1.6 &micro;m</b> per turn, and that drift is the entire mechanism.',
+      cap:'Rings need 2,050 jumps. A spiral needs none.',
+      d: fig(
+        '<circle cx="104" cy="76" r="62" fill="none" stroke="var(--rule)"/>' +
+        [26,36,46,56].map(function(r){ return '<circle cx="104" cy="76" r="'+r+'" fill="none" stroke="var(--ink-faint)" stroke-opacity=".55"/>'; }).join('') +
+        [26,36,46].map(function(r){ return '<line x1="'+(104+r)+'" y1="76" x2="'+(104+r+10)+'" y2="76" stroke="var(--warnline, #E8674F)" stroke-width="1.6"/>' + head(104+r+10,76,0,'#E8674F'); }).join('') +
+        tx(104,158,'CONCENTRIC: SEEK EVERY TURN','9','#E8674F','middle') +
+        '<circle cx="316" cy="76" r="62" fill="none" stroke="var(--rule)"/>' +
+        '<path d="'+spiralPath(316,76,14,56,5)+'" fill="none" stroke="var(--brass)" stroke-width="1.6" stroke-opacity=".9"/>' +
+        '<line x1="316" y1="76" x2="374" y2="76" stroke="var(--brass)" stroke-opacity=".35" stroke-dasharray="2 3"/>' +
+        head(374,76,0,'var(--brass)') +
+        tx(316,158,'SPIRAL: ONE UNBROKEN TRACK','9','var(--brass)','middle')) },
+
+    { at:0.133, t:'Why it starts at the hub',
+      b:'Vinyl plays rim-inward; a CD plays hub-outward. That puts the lead-in and the table of contents at a radius the player can always find without hunting, and it lets a recorder start writing before it knows how long the recording will run.',
+      cap:'Opposite conventions, for good reasons',
+      d: fig(
+        '<circle cx="104" cy="72" r="60" fill="none" stroke="var(--rule)"/>' +
+        '<circle cx="104" cy="72" r="12" fill="var(--panel-2)" stroke="var(--brass)"/>' +
+        '<circle cx="104" cy="72" r="22" fill="none" stroke="var(--brass)" stroke-opacity=".8" stroke-width="2.5"/>' +
+        '<line x1="104" y1="72" x2="104" y2="18" stroke="var(--brass)" stroke-opacity=".6"/>' + head(104,18,-90,'var(--brass)') +
+        tx(104,150,'CD: HUB OUTWARD','9','var(--brass)','middle') +
+        tx(104,163,'lead-in + TOC at 25 mm','8.5','var(--ink-faint)','middle') +
+        '<circle cx="316" cy="72" r="60" fill="none" stroke="var(--rule)"/>' +
+        '<circle cx="316" cy="72" r="10" fill="var(--panel-2)" stroke="var(--rule)"/>' +
+        [30,40,50].map(function(r){ return '<circle cx="316" cy="72" r="'+r+'" fill="none" stroke="var(--ink-faint)" stroke-opacity=".4"/>'; }).join('') +
+        '<line x1="316" y1="18" x2="316" y2="66" stroke="var(--ink-dim)"/>' + head(316,66,90,'var(--ink-dim)') +
+        tx(316,150,'VINYL: RIM INWARD','9','var(--ink-dim)','middle') +
+        tx(316,163,'run-out groove at the centre','8.5','var(--ink-faint)','middle')) },
+
+    { at:0.199, t:'The disc is slowing down right now',
+      b:'Constant linear velocity: pit speed is pinned at 1.2 m/s, so rotation must fall as the head moves out. This track starts near <b>458 rpm</b> and ends around <b>405</b>; a full disc finishes at about <b>197 rpm</b> at the rim. Vinyl holds rpm constant instead &mdash; which is exactly why inner grooves on a record sound worse. A CD carries no such penalty. <b>Drag the head</b> across the disc and watch rotation chase the constant.',
+      cap:'CLV keeps pit speed constant; CAV keeps rpm constant', fn:'clv' },
+
+    { at:0.266, t:'Nothing happens once per revolution',
+      b:'The laser never blinks and nothing resets at the top of a turn. Bits stream off continuously at <b>4,321,800 channel bits per second</b>. The units that actually exist are the <b>frame</b> &mdash; 588 channel bits carrying six stereo samples, 136 &micro;s of music &mdash; and the <b>sector</b>, 98 frames, exactly <b>1/75 second</b>, which is the FF in the timecode. A revolution holds about <b>9.8 sectors</b> here and ends mid-frame, wherever it happens to land. There is no index mark and no sector-per-turn structure. That is the whole difference between a spiral and a hard disk.',
+      cap:'Frames and sectors, indifferent to where a turn ends',
+      d: fig(
+        tx(10,20,'ONE FRAME = 588 CHANNEL BITS = 6 STEREO SAMPLES = 136 &micro;s','9','var(--ink-dim)') +
+        (function(){ var r='', i; for(i=0;i<26;i++){ r += '<rect x="'+(10+i*15.6)+'" y="30" width="13" height="22" rx="1.5" fill="'+(i===0?'var(--brass)':'var(--rule)')+'"/>'; } return r; })() +
+        '<line x1="10" y1="60" x2="410" y2="60" stroke="var(--ink-faint)" stroke-opacity=".5"/>' +
+        '<line x1="10" y1="56" x2="10" y2="64" stroke="var(--ink-faint)"/>' +
+        '<line x1="410" y1="56" x2="410" y2="64" stroke="var(--ink-faint)"/>' +
+        tx(210,78,'98 FRAMES = 1 SECTOR = 1/75 SECOND = ONE TICK OF FF','9','var(--brass)','middle') +
+        '<line x1="268" y1="24" x2="268" y2="96" stroke="#E8674F" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+        tx(276,20,'a revolution ends HERE','9','#E8674F') +
+        tx(276,96,'mid-frame, meaning nothing','8.5','#E8674F') +
+        '<line x1="10" y1="116" x2="410" y2="116" stroke="var(--rule)"/>' +
+        tx(10,134,'7,350 frames per second','9','var(--ink)') +
+        tx(10,150,'75 sectors per second','9','var(--ink)') +
+        tx(230,134,'1,411,200 bits of audio','9','var(--ink-dim)') +
+        tx(230,150,'4,321,800 bits cut in pits','9','var(--brass)')) },
+    { at:0.332, t:'It reads by cancelling light, not blocking it',
+      b:'A pit is <b>0.125 &micro;m</b> deep &mdash; one quarter of the laser&rsquo;s 780 nm wavelength once polycarbonate slows it to about 500 nm. Light bouncing off a pit travels an extra half wavelength and comes back out of step with light off the land beside it. The two interfere destructively and the detector sees a dip in brightness. Never a shadow. <b>Drag the depth</b> and watch it cancel.',
+      cap:'Pit depth vs reflected brightness', fn:'interference' },
+
+    { at:0.399, t:'The data is on the label side',
+      b:'The laser reads upward through <b>1.2 mm</b> of clear polycarbonate. The beam is about 0.8 mm wide where it enters and converges to a <b>1.7 &micro;m</b> spot at the data layer, so dust and fine scratches on the play side sit far out of focus. A scratch on the <i>label</i> side goes straight through the reflective foil and is unrecoverable. <b>Drag the scratch</b> to see how much beam it costs.',
+      cap:'Surface defect vs beam cross-section', fn:'focus' },
+
+    { at:0.465, t:'Pits are not bits',
+      b:'Eight-to-fourteen modulation turns every byte into 14 channel bits plus 3 merging bits, chosen so there are never fewer than two or more than ten zeros in a row. That holds every pit and land between <b>3T and 11T</b> &mdash; 0.83 to 3.05 &micro;m at this speed, lengths the optics can resolve. The cost is <b>17 bits cut into the disc for every 8 bits of audio</b>.',
+      cap:'Run-length limits set the pit lengths',
+      d: fig(
+        tx(10,16,'CHANNEL BITS &mdash; A ONE MEANS &ldquo;EDGE HERE&rdquo;','9','var(--ink-dim)') +
+        tx(10,34,'1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 1','11','var(--brass)') +
+        tx(10,50,'&larr;3T&rarr; &larr;&mdash;6T&mdash;&rarr; &larr;4T&rarr; &larr;&mdash;&mdash;10T&mdash;&mdash;&rarr;','8.5') +
+        '<rect x="10" y="64" width="400" height="30" rx="2" fill="var(--panel-2)"/>' +
+        [[10,34],[44,68],[112,45],[157,113]].map(function(a,i){
+          return '<rect x="'+a[0]+'" y="'+(i%2?64:64)+'" width="'+a[1]+'" height="30" fill="'+(i%2?'var(--brass)':'var(--rule)')+'" fill-opacity="'+(i%2?'.55':'1')+'"/>'; }).join('') +
+        '<rect x="270" y="64" width="30" height="30" fill="var(--brass)" fill-opacity=".55"/>' +
+        '<rect x="300" y="64" width="60" height="30" fill="var(--rule)"/>' +
+        '<rect x="360" y="64" width="50" height="30" fill="var(--brass)" fill-opacity=".55"/>' +
+        tx(10,110,'PIT') + tx(48,110,'LAND','9','var(--brass)') +
+        '<line x1="10" y1="126" x2="42" y2="126" stroke="var(--ink-dim)"/>' +
+        tx(48,130,'3T = 0.83 &micro;m minimum','9','var(--ink-dim)') +
+        '<line x1="230" y1="126" x2="348" y2="126" stroke="var(--ink-dim)"/>' +
+        tx(354,130,'11T = 3.05 &micro;m','9','var(--ink-dim)') +
+        tx(10,152,'8 bits of audio &rarr; 14 + 3 = 17 bits on the disc','9','var(--brass)')) },
+
+    { at:0.531, t:'A scratch is spread thin on purpose',
+      b:'Cross-Interleaved Reed-Solomon scatters each moment of audio across a long stretch of track, so physical damage arrives at the decoder as many isolated errors instead of one fatal block. A CD fully corrects a burst of about <b>4,000 bits of audio</b> &mdash; 8,500 channel bits, roughly <b>2.4 mm</b> of track &mdash; and interpolates through to about 8 mm. <b>Drag the damage</b> and find the edges.',
+      cap:'Deinterleaving turns one gouge into scattered specks',
+      d: (function(){
+        var cells='', i;
+        for (i=0;i<40;i++){
+          var bad = (i>=14 && i<=21);
+          cells += '<rect x="'+(10+i*10)+'" y="34" width="8" height="20" rx="1" fill="'+(bad?'#E8674F':'var(--rule)')+'"/>';
+        }
+        var scat='', hit=[2,7,11,16,20,25,31,36];
+        for (i=0;i<40;i++){
+          var b2 = hit.indexOf(i)>=0;
+          scat += '<rect x="'+(10+i*10)+'" y="110" width="8" height="20" rx="1" fill="'+(b2?'#E8674F':'var(--rule)')+'"/>';
+        }
+        return fig(
+          tx(10,26,'AS WRITTEN ON THE DISC &mdash; ONE 2.5 mm SCRATCH','9','#E8674F') + cells +
+          '<line x1="200" y1="66" x2="200" y2="96" stroke="var(--ink-faint)"/>' + head(200,96,90) +
+          tx(210,86,'deinterleave','9','var(--ink-dim)') +
+          tx(10,102,'AS THE DECODER SEES IT &mdash; ISOLATED, EVERY ONE CORRECTABLE','9','var(--brass)') + scat +
+          tx(10,152,'same eight errors, none of them adjacent','9','var(--ink-faint)'));
+      })() },
+
+    { at:0.598, t:'How small 1.6 micrometers is',
+      b:'A number in micrometers means nothing until you stand something next to it. <b>44 tracks fit across one human hair.</b> The pit is narrower than the wavelength of red light, and its depth &mdash; 0.125 &micro;m &mdash; is smaller than most viruses. This is why a CD is stamped from a mold rather than cut: nothing mechanical can be steered that finely, so the shape is pressed in and read with light that is bigger than the thing it is reading.',
+      cap:'Everything here is drawn to one log scale',
+      d: (function(){
+        var items = [
+          [300,  'Grain of table salt'],
+          [70,   'Human hair'],
+          [7.5,  'Red blood cell'],
+          [2,    'E. coli bacterium'],
+          [1.6,  'CD track pitch'],
+          [0.78, 'The reading laser'],
+          [0.7,  'Red light'],
+          [0.5,  'CD pit width'],
+          [0.125,'CD pit depth'],
+          [0.1,  'A virus']
+        ];
+        var lo = Math.log10(0.08), hi = Math.log10(400);
+        function px(v){ return 20 + (Math.log10(v)-lo)/(hi-lo) * 300; }
+        var out = tx(20,14,'0.1 &micro;m','8') + tx(320,14,'300 &micro;m','8','var(--ink-faint)','end');
+        out += '<line x1="20" y1="20" x2="320" y2="20" stroke="var(--rule)"/>';
+        items.forEach(function(it,i){
+          var x = px(it[0]), y = 32 + i*13.4;
+          var cd = it[1].indexOf('CD') === 0 || it[1].indexOf('laser') > 0;
+          var col = cd ? 'var(--brass)' : 'var(--ink-faint)';
+          out += '<line x1="'+x+'" y1="20" x2="'+x+'" y2="'+y+'" stroke="'+col+'" stroke-opacity=".35"/>';
+          out += '<circle cx="'+x+'" cy="'+y+'" r="2.6" fill="'+col+'"/>';
+          out += tx(x+7, y+3.5, it[1] + '  ' + it[0] + ' &micro;m', '8.5', cd ? 'var(--brass)' : 'var(--ink-dim)');
+        });
+        // one hair, with tracks laid across it
+        out += '<line x1="345" y1="26" x2="345" y2="150" stroke="var(--rule)"/>';
+        out += '<rect x="356" y="30" width="54" height="112" rx="3" fill="var(--panel-2)" stroke="var(--ink-faint)" stroke-opacity=".5"/>';
+        var lines = '';
+        for (var k=0;k<44;k++) lines += '<line x1="357" y1="'+(31+k*2.53)+'" x2="409" y2="'+(31+k*2.53)+'" stroke="var(--brass)" stroke-opacity=".55" stroke-width="0.9"/>';
+        out += lines;
+        out += tx(383,22,'ONE HAIR','8','var(--ink-faint)','middle');
+        out += tx(383,156,'44 TRACKS','8.5','var(--brass)','middle');
+        return fig(out);
+      })() },
+    { at:0.664, t:'Left and right share one stream',
+      b:'There is one spiral and one pit stream; the channels are multiplexed inside it. Every frame carries 24 bytes of audio &mdash; <b>six left samples and six right, alternating L R L R L R</b>. CIRC then pulls them deliberately apart: even and odd samples of a channel are delayed against each other and spread over roughly <b>108 frames</b>, so a burst that kills one sample usually leaves the samples either side of it intact and the decoder interpolates across the hole. <b>A caution about the disc above:</b> it draws left toward the hub and right toward the rim. That is a reading aid I chose, not physics. There is no left side of a groove.',
+      cap:'One stream, two channels, then scattered on purpose', fn:'circ' },
+    { at:0.731, t:'44.1 kHz came from television',
+      b:'Early digital masters were stored on video recorders, so the sample rate had to fit a TV frame. Three samples per line &times; 245 active lines &times; 60 fields gives <b>44,100</b> for NTSC &mdash; and 3 &times; 294 &times; 50 gives exactly the same number for PAL. The rate is an artifact of broadcast video, not of audio theory. <b>Drag the tone past 22.05 kHz</b> and watch it fold back into something lower &mdash; that is why a CD filters everything above 20 kHz before it ever samples.',
+      cap:'One number that fits both broadcast standards', fn:'sampling' },
+
+    { at:0.797, t:'The 74-minute story is disputed',
+      b:'The famous version has Sony&rsquo;s Norio Ohga insisting a disc had to hold Beethoven&rsquo;s Ninth. Philips engineers have told it differently &mdash; that 12 cm was chosen to match the diagonal of a cassette, and the playing time simply fell out of the geometry. Both accounts come from people who were in the room, which is why you should treat the tidy version with suspicion.',
+      cap:'Two first-hand accounts, not one',
+      d: fig(
+        '<rect x="10" y="24" width="192" height="104" rx="3" fill="var(--panel-2)" stroke="var(--rule)"/>' +
+        tx(24,48,'SONY','10','var(--brass)') +
+        tx(24,70,'&ldquo;It must hold the Ninth.&rdquo;','10','var(--ink)') +
+        tx(24,92,'74 minutes chosen first,','9','var(--ink-dim)') +
+        tx(24,106,'diameter followed.','9','var(--ink-dim)') +
+        '<rect x="218" y="24" width="192" height="104" rx="3" fill="var(--panel-2)" stroke="var(--rule)"/>' +
+        tx(232,48,'PHILIPS','10','var(--brass)') +
+        tx(232,70,'&ldquo;12 cm was a cassette','10','var(--ink)') +
+        tx(232,84,'diagonal.&rdquo;','10','var(--ink)') +
+        tx(232,106,'Diameter first, time followed.','9','var(--ink-dim)') +
+        tx(210,152,'BOTH SOURCES WERE THERE. THE STORY IS NOT SETTLED.','9','var(--ink-faint)','middle')) },
+
+    { at:0.864, t:'Unrolled, it is a walk',
+      b:'A full disc holds about <b>5.3 km</b> of pit track &mdash; about 3.3 miles of pits half a micrometer wide, wound into a band 33 mm (1.3 in) across. This one song is <b>343 m</b> (1,126 ft) of that: 2,050 revolutions, finishing 3.3 mm further out than it began.',
+      cap:'This song against a full disc',
+      d: fig(
+        tx(10,24,'FULL DISC &mdash; 5,332 m / 3.3 MILES OF PIT TRACK','9','var(--ink-dim)') +
+        '<rect x="10" y="34" width="400" height="16" rx="3" fill="var(--rule)"/>' +
+        '<rect x="10" y="34" width="26" height="16" rx="3" fill="var(--brass)"/>' +
+        tx(42,46,'&larr; this song, 343 m / 1,126 ft','9','var(--brass)') +
+        tx(10,78,'WOUND INTO A BAND 33 mm WIDE','9','var(--ink-dim)') +
+        '<line x1="10" y1="92" x2="410" y2="92" stroke="var(--rule)"/>' +
+        '<line x1="10" y1="112" x2="410" y2="112" stroke="var(--rule)"/>' +
+        (function(){ var l=''; for(var i=0;i<80;i++){ l += '<line x1="'+(12+i*5)+'" y1="92" x2="'+(12+i*5)+'" y2="112" stroke="var(--ink-faint)" stroke-opacity=".28"/>'; } return l; })() +
+        '<rect x="10" y="92" width="26" height="20" fill="var(--brass)" fill-opacity=".45"/>' +
+        tx(10,132,'25 mm','8.5') + tx(410,132,'58 mm','8.5','var(--ink-faint)','end') +
+        tx(210,158,'20,500 revolutions on a full disc. 2,050 here.','9','var(--ink-faint)','middle')) },
+
+    { at:0.930, t:'Which is why the coil is small',
+      b:'4:46 is <b>6.4%</b> of a disc&rsquo;s 74 minutes. Everything past the dashed line on the disc is bare polycarbonate that was never written to. At true scale, that is what one song on a CD actually looks like &mdash; and it is why albums, not singles, were the format that fit.',
+      cap:'One song, actual size',
+      d: fig(
+        '<circle cx="210" cy="80" r="72" fill="none" stroke="var(--rule)"/>' +
+        (function(){ var r=''; for(var i=5;i<=13;i++){ r += '<circle cx="210" cy="80" r="'+(i*5.4)+'" fill="none" stroke="var(--ink-faint)" stroke-opacity=".16"/>'; } return r; })() +
+        '<circle cx="210" cy="80" r="24" fill="none" stroke="var(--brass)" stroke-width="7" stroke-opacity=".75"/>' +
+        '<circle cx="210" cy="80" r="28.5" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 4"/>' +
+        '<circle cx="210" cy="80" r="10" fill="var(--ground)" stroke="var(--rule)"/>' +
+        tx(300,44,'6.4%','20','var(--brass)') +
+        tx(300,60,'of the disc written','9','var(--ink-dim)') +
+        tx(300,86,'93.6%','13','var(--ink-faint)') +
+        tx(300,100,'never touched','9','var(--ink-faint)') +
+        tx(210,166,'THE GOLD BAND IS THE WHOLE SONG','9','var(--brass)','middle')) }
+  ];
+  // ---------- the two figures you can poke ----------
+  var FIGS = {};
+
+  function figCanvas(host, cap, ctlLabel, min, max, val, step, onDraw, fmt){
+    host.innerHTML = '';
+    var cv = document.createElement('canvas');
+    cv.width = 840; cv.height = 300;
+    cv.style.width = '100%'; cv.style.height = 'auto';
+    var ctl = document.createElement('div');
+    ctl.className = 'fig-ctl';
+    var lab = document.createElement('span'); lab.textContent = ctlLabel;
+    var rng = document.createElement('input');
+    rng.type = 'range'; rng.min = min; rng.max = max; rng.step = step; rng.value = val;
+    var out = document.createElement('b');
+    var capEl = document.createElement('div'); capEl.className = 'fig-cap'; capEl.textContent = cap;
+    ctl.appendChild(lab); ctl.appendChild(rng); ctl.appendChild(out);
+    host.appendChild(cv); host.appendChild(ctl); host.appendChild(capEl);
+    var c = cv.getContext('2d');
+    function go(){ var v = parseFloat(rng.value); out.textContent = fmt(v); onDraw(c, v); }
+    rng.addEventListener('input', go);
+    go();
+  }
+
+  // pit depth -> path difference -> interference
+  FIGS.interference = function(host, cap){
+    var LAMBDA = 500;   // nm, 780 nm laser slowed by polycarbonate (n = 1.55)
+    figCanvas(host, cap, 'Pit depth', 0, 190, 125, 1, function(c, d){
+      var W = 840, H = 300;
+      c.fillStyle = '#0B0E15'; c.fillRect(0,0,W,H);
+      var phi = 4*Math.PI*d/LAMBDA;             // 2d of extra path
+      var amp = Math.cos(phi/2);                // summed amplitude, equal beams
+      var I = amp*amp;
+
+      // --- left: the surface in cross-section ---
+      var top = 96, dep = (d/190)*54;
+      c.strokeStyle = '#3A4252'; c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(30, top); c.lineTo(150, top);
+      c.lineTo(150, top+dep); c.lineTo(250, top+dep); c.lineTo(250, top);
+      c.lineTo(370, top);
+      c.stroke();
+      c.fillStyle = 'rgba(58,66,82,0.35)';
+      c.fillRect(30, top, 340, 120);
+      c.fillStyle = '#5A6170';
+      c.font = "13px 'IBM Plex Mono',monospace";
+      c.fillText('LAND', 70, top+30); c.fillText('PIT', 184, top+dep+26); c.fillText('LAND', 296, top+30);
+
+      // beams down and back
+      [[90,top],[200,top+dep]].forEach(function(b, i){
+        c.strokeStyle = i ? '#E8548F' : '#22A8D6';
+        c.lineWidth = 2;
+        c.beginPath(); c.moveTo(b[0]-9, 26); c.lineTo(b[0]-9, b[1]); c.stroke();
+        c.beginPath(); c.moveTo(b[0]+9, b[1]); c.lineTo(b[0]+9, 26); c.stroke();
+      });
+      c.fillStyle = '#8B93A3';
+      c.fillText('extra path = 2 \u00D7 depth = ' + (2*d) + ' nm', 30, 268);
+      c.fillText('= ' + (2*d/LAMBDA).toFixed(2) + ' wavelengths', 30, 288);
+
+      // --- right: the two waves and their sum ---
+      var x0 = 420, x1 = 810, mid = 76;
+      function wave(yc, phase, col, sc){
+        c.strokeStyle = col; c.lineWidth = 2; c.beginPath();
+        for (var x = x0; x <= x1; x++){
+          var y = yc - Math.sin((x-x0)/26 + phase) * 22 * sc;
+          if (x === x0) c.moveTo(x,y); else c.lineTo(x,y);
+        }
+        c.stroke();
+      }
+      wave(mid, 0, '#22A8D6', 1);
+      wave(mid+62, phi, '#E8548F', 1);
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(x0, mid+150); c.lineTo(x1, mid+150); c.stroke();
+      wave(mid+150, phi/2, '#F0B24A', Math.abs(amp)*2);
+
+      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
+      c.fillText('OFF THE LAND', x0, 30);
+      c.fillText('OFF THE PIT', x0, mid+40);
+      c.fillStyle = '#F0B24A';
+      c.fillText('WHAT THE DETECTOR GETS', x0, mid+112);
+
+      // brightness meter
+      c.fillStyle = '#171B25'; c.fillRect(x0, 252, 390, 20);
+      c.fillStyle = I < 0.06 ? '#E8674F' : '#F0B24A';
+      c.fillRect(x0, 252, 390*I, 20);
+      c.fillStyle = '#E6E9F0'; c.font = "14px 'IBM Plex Mono',monospace";
+      c.fillText('reflected brightness ' + Math.round(I*100) + '%', x0, 292);
+      if (I < 0.06){
+        c.fillStyle = '#E8674F';
+        c.fillText('CANCELLED \u2014 this is a pit', x0 + 250, 292);
+      }
+    }, function(v){ return (v/1000).toFixed(3) + ' \u00B5m'; });
+  };
+
+  // surface defect against the beam cross-section
+  FIGS.focus = function(host, cap){
+    figCanvas(host, cap, 'Scratch width', 0, 800, 120, 10, function(c, wUm){
+      var W = 840, H = 300;
+      c.fillStyle = '#0B0E15'; c.fillRect(0,0,W,H);
+      var surfY = 52, dataY = 244, cx = 250;
+      var halfTop = 108;                 // 0.8 mm beam, drawn half-width
+
+      // polycarbonate slab
+      c.fillStyle = 'rgba(23,27,37,0.85)';
+      c.fillRect(30, surfY, 440, dataY-surfY);
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.strokeRect(30, surfY, 440, dataY-surfY);
+      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
+      c.fillText('1.2 mm POLYCARBONATE', 44, (surfY+dataY)/2);
+
+      // converging cone
+      c.fillStyle = 'rgba(34,168,214,0.20)';
+      c.beginPath();
+      c.moveTo(cx-halfTop, surfY); c.lineTo(cx+halfTop, surfY);
+      c.lineTo(cx+3, dataY); c.lineTo(cx-3, dataY);
+      c.closePath(); c.fill();
+      c.strokeStyle = '#22A8D6'; c.lineWidth = 1.5;
+      c.beginPath(); c.moveTo(cx-halfTop, surfY); c.lineTo(cx-3, dataY);
+      c.moveTo(cx+halfTop, surfY); c.lineTo(cx+3, dataY); c.stroke();
+
+      // data layer + label side
+      c.strokeStyle = '#E0A94A'; c.lineWidth = 3;
+      c.beginPath(); c.moveTo(30, dataY); c.lineTo(470, dataY); c.stroke();
+      c.fillStyle = '#E0A94A'; c.font = "12px 'IBM Plex Mono',monospace";
+      c.fillText('DATA LAYER + FOIL \u2014 the label side', 30, dataY+22);
+      c.fillStyle = '#5A6170';
+      c.fillText('1.7 \u00B5m spot', cx+14, dataY-10);
+      c.fillText('0.8 mm at the surface', cx-halfTop, surfY-14);
+
+      // the scratch, to scale against the 0.8 mm entry footprint
+      var halfPx = Math.min(halfTop, (wUm/800)*halfTop);
+      if (wUm > 0){
+        c.fillStyle = '#E8674F';
+        c.fillRect(cx-halfPx, surfY-7, halfPx*2, 9);
+      }
+
+      // blocked fraction: a central strip across a circular beam
+      var R = 400, a = Math.min(R, wUm/2);
+      var blocked = a <= 0 ? 0 :
+        (2*(a*Math.sqrt(R*R-a*a) + R*R*Math.asin(a/R))) / (Math.PI*R*R);
+
+      // beam cross-section, seen end-on
+      var bx = 640, by = 130, br = 76;
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.stroke();
+      c.fillStyle = 'rgba(34,168,214,0.22)';
+      c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.fill();
+      if (a > 0){
+        var ap = (a/R)*br;
+        c.save();
+        c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.clip();
+        c.fillStyle = 'rgba(232,103,79,0.75)';
+        c.fillRect(bx-ap, by-br, ap*2, br*2);
+        c.restore();
+      }
+      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
+      c.fillText('BEAM AT THE SURFACE', bx-br, by-br-14);
+      c.fillStyle = '#E6E9F0'; c.font = "15px 'IBM Plex Mono',monospace";
+      c.fillText(Math.round(blocked*100) + '% of the beam blocked', bx-br-20, by+br+34);
+      c.font = "12px 'IBM Plex Mono',monospace";
+      c.fillStyle = blocked > 0.5 ? '#E8674F' : '#F0B24A';
+      c.fillText(blocked > 0.5 ? 'beyond what CIRC can conceal'
+                               : 'CIRC corrects this without a click', bx-br-20, by+br+56);
+    }, function(v){ return v === 0 ? 'none' : (v/1000).toFixed(2) + ' mm'; });
+  };
+
+
+  // drag the head across the program area and watch rotation chase the constant
+  FIGS.clv = function(host, cap){
+    figCanvas(host, cap, 'Head radius', 25, 57.8, 26, 0.1, function(c, r){
+      var W=840, H=300;
+      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
+      var rpm = 1200/(TAU*r)*60;
+
+      // the disc, seen face on
+      var cx=140, cy=150, R=112, R0v=25, R1v=57.8;
+      c.strokeStyle='#242A36'; c.lineWidth=1;
+      c.beginPath(); c.arc(cx,cy,R,0,TAU); c.stroke();
+      c.beginPath(); c.arc(cx,cy,R*0.10,0,TAU); c.stroke();
+      var rr = R*0.10 + (R-R*0.10)*((r-R0v)/(R1v-R0v));
+      c.strokeStyle='rgba(224,169,74,.35)'; c.lineWidth=1;
+      c.beginPath(); c.arc(cx,cy,rr,0,TAU); c.stroke();
+      c.fillStyle='#FFFFFF';
+      c.beginPath(); c.arc(cx, cy-rr, 5, 0, TAU); c.fill();
+      c.fillStyle='#5A6170'; c.font="12px 'IBM Plex Mono',monospace";
+      c.fillText('25 mm', cx-24, cy+R*0.10+16);
+      c.fillText('57.8 mm', cx-30, cy+R+18);
+
+      // what stays fixed and what gives
+      var x=300;
+      c.fillStyle='#5A6170'; c.fillText('PIT SPEED PAST THE LENS', x, 44);
+      c.fillStyle='#171B25'; c.fillRect(x, 54, 480, 22);
+      c.fillStyle='rgba(224,169,74,.55)'; c.fillRect(x, 54, 480, 22);
+      c.fillStyle='#E0A94A'; c.font="16px 'IBM Plex Mono',monospace";
+      c.fillText('1.20 m/s  -  never changes', x+12, 70);
+
+      c.fillStyle='#5A6170'; c.font="12px 'IBM Plex Mono',monospace";
+      c.fillText('SO ROTATION HAS TO GIVE', x, 116);
+      c.fillStyle='#171B25'; c.fillRect(x, 126, 480, 22);
+      var frac = (rpm-198)/(458-198);
+      c.fillStyle='#22A8D6'; c.fillRect(x, 126, 480*Math.max(0.02,frac), 22);
+      c.fillStyle='#E6E9F0'; c.font="20px 'IBM Plex Mono',monospace";
+      c.fillText(Math.round(rpm)+' rpm', x, 176);
+      c.fillStyle='#8B93A3'; c.font="12px 'IBM Plex Mono',monospace";
+      c.fillText('at '+r.toFixed(1)+' mm', x+130, 176);
+
+      // vinyl, for contrast
+      c.strokeStyle='#242A36'; c.beginPath(); c.moveTo(x,200); c.lineTo(780,200); c.stroke();
+      c.fillStyle='#5A6170';
+      c.fillText('VINYL HOLDS 33 1/3 rpm INSTEAD, SO ITS GROOVE SPEED FALLS:', x, 224);
+      c.fillStyle='#8B93A3'; c.font="13px 'IBM Plex Mono',monospace";
+      c.fillText('509 mm/s at the rim  ->  209 mm/s at the label', x, 250);
+      c.fillStyle='#E8674F';
+      c.fillText('2.4x less groove per second by the last track. A CD never pays this.', x, 274);
+    }, function(v){ return v.toFixed(1) + ' mm'; });
+  };
+
+  // sampling and the fold-back above Nyquist
+  FIGS.sampling = function(host, cap){
+    var FS = 44.1;                       // kHz
+    figCanvas(host, cap, 'Tone frequency', 1, 40, 18, 0.1, function(c, f){
+      var W=840, H=300, T=0.6;           // 0.6 ms of time on screen
+      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
+      var x0=30, x1=810, mid=150, A=88;
+      var nyq = FS/2, over = f > nyq;
+      var alias = over ? FS - f : f;
+
+      c.strokeStyle='#242A36'; c.lineWidth=1;
+      c.beginPath(); c.moveTo(x0,mid); c.lineTo(x1,mid); c.stroke();
+
+      // the actual tone
+      c.strokeStyle='rgba(139,147,163,.55)'; c.lineWidth=1.5;
+      c.beginPath();
+      for (var px=x0; px<=x1; px++){
+        var t=(px-x0)/(x1-x0)*T;
+        var y=mid-Math.sin(TAU*f*t)*A;
+        if(px===x0) c.moveTo(px,y); else c.lineTo(px,y);
+      }
+      c.stroke();
+
+      // what a CD keeps: 44,100 instants per second
+      var n=0, tt;
+      c.fillStyle='#E0A94A';
+      while ((tt = n/FS) <= T){
+        var sx = x0 + (tt/T)*(x1-x0);
+        var sy = mid - Math.sin(TAU*f*tt)*A;
+        c.beginPath(); c.arc(sx, sy, 4, 0, TAU); c.fill();
+        c.strokeStyle='rgba(224,169,74,.30)';
+        c.beginPath(); c.moveTo(sx,mid); c.lineTo(sx,sy); c.stroke();
+        n++;
+      }
+
+      // what comes back out of the filter
+      c.strokeStyle = over ? '#E8674F' : '#22A8D6';
+      c.lineWidth=2.5;
+      c.beginPath();
+      for (var px2=x0; px2<=x1; px2++){
+        var t2=(px2-x0)/(x1-x0)*T;
+        var v = over ? -Math.sin(TAU*alias*t2) : Math.sin(TAU*f*t2);
+        var y2=mid-v*A;
+        if(px2===x0) c.moveTo(px2,y2); else c.lineTo(px2,y2);
+      }
+      c.stroke();
+
+      c.font="12px 'IBM Plex Mono',monospace";
+      c.fillStyle='#8B93A3'; c.fillText('THE TONE', x0, 28);
+      c.fillStyle='#E0A94A'; c.fillText('44,100 SAMPLES / SECOND', x0+120, 28);
+      c.fillStyle = over ? '#E8674F' : '#22A8D6';
+      c.fillText('WHAT COMES BACK', x0+400, 28);
+
+      c.font="17px 'IBM Plex Mono',monospace";
+      if (over){
+        c.fillStyle='#E8674F';
+        c.fillText(f.toFixed(1)+' kHz comes back as '+alias.toFixed(1)+' kHz', x0, 278);
+        c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
+        c.fillText('Above 22.05 kHz the samples fit a lower tone just as well. A CD player', x0, 296);
+      } else {
+        c.fillStyle='#22A8D6';
+        c.fillText(f.toFixed(1)+' kHz survives exactly', x0, 278);
+        c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
+        c.fillText('Below 22.05 kHz only one waveform fits these samples. Push past it and see.', x0, 296);
+      }
+    }, function(v){ return v.toFixed(1) + ' kHz'; });
+  };
+
+  // how long a gouge can be before you hear it
+  FIGS.circ = function(host, cap){
+    var MM_PER_CHANNEL_BIT = 1200 / 4321800;      // 0.2777 um
+    var CORRECT = 2.4, CONCEAL = 8.0;             // mm of track
+    figCanvas(host, cap, 'Damage along track', 0, 14, 2.0, 0.1, function(c, mm){
+      var W=840, H=300;
+      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
+      var x0=30, x1=810, span=14;
+      var chBits = mm/MM_PER_CHANNEL_BIT, dataBits = chBits*8/17;
+
+      c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#5A6170';
+      c.fillText('ONE STRETCH OF TRACK', x0, 30);
+      c.fillStyle='#171B25'; c.fillRect(x0, 40, x1-x0, 30);
+      var wpx = (mm/span)*(x1-x0);
+      c.fillStyle='#E8674F'; c.fillRect(x0, 40, wpx, 30);
+
+      // the three regimes, drawn to the same scale
+      [[0,CORRECT,'#22A8D6','CORRECTED'],[CORRECT,CONCEAL,'#E0A94A','CONCEALED'],[CONCEAL,span,'#E8674F','AUDIBLE']].forEach(function(z){
+        var a=x0+(z[0]/span)*(x1-x0), b=x0+(z[1]/span)*(x1-x0);
+        c.fillStyle=z[2]; c.globalAlpha=.22; c.fillRect(a, 84, b-a, 16); c.globalAlpha=1;
+        c.fillStyle=z[2]; c.font="11px 'IBM Plex Mono',monospace";
+        c.fillText(z[3], a+6, 96);
+      });
+      c.strokeStyle='#E6E9F0'; c.lineWidth=2;
+      c.beginPath(); c.moveTo(x0+wpx, 78); c.lineTo(x0+wpx, 106); c.stroke();
+
+      c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
+      c.fillText(Math.round(chBits).toLocaleString()+' channel bits', x0, 140);
+      c.fillText('= '+Math.round(dataBits).toLocaleString()+' bits of audio  (17 on the disc per 8 of music)', x0, 158);
+
+      var verdict, sub, col;
+      if (mm <= CORRECT){
+        col='#22A8D6'; verdict='Corrected outright. Bit perfect.';
+        sub='Deinterleaving scatters this into isolated errors and Reed-Solomon rebuilds every one.';
+      } else if (mm <= CONCEAL){
+        col='#E0A94A'; verdict='Concealed by interpolation.';
+        sub='Too much to rebuild, so lost samples are drawn from their surviving neighbors. Rarely audible.';
+      } else {
+        col='#E8674F'; verdict='Beyond concealment. You hear it.';
+        sub='Not enough intact neighbors left to interpolate from. The player mutes rather than click.';
+      }
+      c.fillStyle=col; c.font="18px 'IBM Plex Mono',monospace";
+      c.fillText(verdict, x0, 208);
+      c.fillStyle='#8B93A3'; c.font="12px 'IBM Plex Mono',monospace";
+      c.fillText(sub, x0, 232);
+      c.fillStyle='#5A6170';
+      c.fillText('Interleaving is the whole trick: damage is contiguous on the disc,', x0, 262);
+      c.fillText('but scattered by the time the decoder sees it.', x0, 280);
+    }, function(v){ return v.toFixed(1) + ' mm'; });
+  };
+
+  var noteAt = -1, holding = false;
+
+  function buildDots(){
+    var h = '';
+    for (var i = 0; i < NOTES.length; i++) h += '<i></i>';
+    el.nDots.innerHTML = h;
+  }
+  function noteIndex(t){
+    var i = 0;
+    for (var k = 0; k < NOTES.length; k++) if (t >= NOTES[k].at) i = k;
+    return i;
+  }
+  function showNote(i){
+    if (i === noteAt) return;
+    noteAt = i;
+    var n = NOTES[i];
+    if (n.fn && FIGS[n.fn]) FIGS[n.fn](el.nFig, n.cap);
+    else el.nFig.innerHTML = (n.d || '') + '<div class="fig-cap">' + (n.cap || '') + '</div>';
+    el.nNum.textContent = pad(i+1);
+    el.nOf.textContent = 'of ' + NOTES.length;
+    el.nAt.textContent = data ? msf(n.at * data.duration).slice(0,5) : '--:--';
+    el.nTitle.innerHTML = n.t;
+    el.nText.innerHTML = n.b;
+    var kids = el.nDots.children;
+    for (var k = 0; k < kids.length; k++) kids[k].className = k === i ? 'on' : '';
+  }
+  var holdBtn = document.getElementById('nHold');
+  function setHold(v){
+    holding = v;
+    holdBtn.setAttribute('aria-pressed', v ? 'true' : 'false');
+    holdBtn.textContent = v ? 'Holding' : 'Following';
+    if (!v && data) showNote(noteIndex(position()/data.duration));
+  }
+  holdBtn.addEventListener('click', function(){ setHold(!holding); });
+  // browsing the notes should never move the music
+  document.getElementById('nPrev').addEventListener('click', function(){
+    setHold(true); showNote(Math.max(0, noteAt-1));
+  });
+  document.getElementById('nNext').addEventListener('click', function(){
+    setHold(true); showNote(Math.min(NOTES.length-1, noteAt+1));
+  });
+
+  // ---------- retrieval practice ----------
+  var QUIZ = [
+    ['The disc slows from 458 to 405 rpm across this one song. What forces it to slow down?',
+     'Pit speed is held constant at <b>1.2 m/s</b>. As the head moves outward the circumference grows, so it takes fewer turns per second to deliver the same length of track past the lens. Rotation is whatever it has to be to keep that one number fixed.'],
+    ['A CD has no index mark and no sectors-per-revolution. So what is it addressed by?',
+     'Time. <b>MM:SS:FF</b>, where FF counts sectors of 1/75 second &mdash; 98 frames each. Revolutions are invisible to the format; a turn ends mid-frame wherever it happens to land.'],
+    ['Why is a pit exactly 0.125 &micro;m deep rather than simply deeper?',
+     'It is a quarter of the laser&rsquo;s <b>500 nm</b> wavelength inside polycarbonate. Down and back adds half a wave, so the reflection cancels against light off the land beside it. Deeper or shallower and the cancellation weakens &mdash; depth is tuned to the light, not to the machinery.'],
+    ['Why does a scratch on the clear side matter far less than one on the label side?',
+     'The beam is about <b>0.8 mm wide</b> at the clear surface and wildly out of focus there, so a small defect blocks very little of it. The label side has only lacquer over the reflective foil, which <i>is</i> the data.'],
+    ['Why does CIRC scatter each moment of audio across roughly 108 frames?',
+     'So that damage which is contiguous <i>on the disc</i> arrives at the decoder as many isolated errors. Each is individually correctable, and any sample that is lost still has intact neighbors on either side to interpolate from.'],
+    ['Push a 30 kHz tone into a CD and what comes out?',
+     'A <b>14.1 kHz</b> tone. Above 22.05 kHz the samples fit a lower waveform just as well, so the frequency folds back as 44.1 &minus; 30. This is why everything above 20 kHz is filtered out <i>before</i> sampling, and why the extra 4.1 kHz of headroom exists at all.'],
+    ['Your master and a 2026 loud master both nearly touch full scale. What actually differs between them?',
+     'Crest factor. Limiting flattens the transients so the average can be lifted underneath them; the peak stays pinned at the ceiling while gated RMS climbs from <b>&minus;17.8</b> to <b>&minus;9.4 dBFS</b>. Loudness is bought by discarding the distance between loud and quiet.'],
+    ['Roughly how many CD tracks would fit across a single human hair?',
+     'About <b>44</b>. A hair is around 70 &micro;m across and the track pitch is 1.6 &micro;m. The pit itself is narrower than a wavelength of red light.']
+  ];
+  (function(){
+    var host = document.getElementById('qlist'), h = '';
+    for (var i = 0; i < QUIZ.length; i++){
+      h += '<details><summary>' + QUIZ[i][0] + '</summary><p>' + QUIZ[i][1] + '</p></details>';
+    }
+    host.innerHTML = h;
+  })();
+
+  // ---------- analysis ----------
+  function analyze(buf){
+    var n = buf.length, ch = buf.numberOfChannels;
+    var L = buf.getChannelData(0), R = buf.getChannelData(ch>1?1:0);
+    var peak=new Float32Array(BUCKETS), pL=new Float32Array(BUCKETS), pR=new Float32Array(BUCKETS), rms=new Float32Array(BUCKETS);
+    var gPeak=0, gSq=0, gCnt=0;
+    for (var b = 0; b < BUCKETS; b++){
+      var s0 = Math.floor(b*n/BUCKETS), s1 = Math.floor((b+1)*n/BUCKETS);
+      if (s1 <= s0) s1 = s0+1; if (s1 > n) s1 = n;
+      var p=0, l=0, r=0, sq=0, cnt=0;
+      for (var i = s0; i < s1; i++){
+        var vl=L[i], vr=R[i], al=vl<0?-vl:vl, ar=vr<0?-vr:vr;
+        if (al>l) l=al; if (ar>r) r=ar;
+        var v=(vl+vr)*0.5, a=v<0?-v:v;
+        if (a>p) p=a;
+        sq += v*v; cnt++;
+      }
+      if (!cnt) cnt=1;
+      peak[b]=p; pL[b]=l; pR[b]=r; rms[b]=Math.sqrt(sq/cnt);
+      if (p>gPeak) gPeak=p;
+      gSq+=sq; gCnt+=cnt;
+    }
+    var sp = spectrogram(L, R, ch, n, buf.sampleRate);
+    return { L:L, R:R, sr:buf.sampleRate,
+             peak:peak, peakL:pL, peakR:pR, rms:rms, centroid:sp.centroid, spec:sp.spec,
+             globalPeak:gPeak, globalRms:Math.sqrt(gSq/Math.max(1,gCnt)),
+             duration:buf.duration, sampleRate:buf.sampleRate, channels:ch };
+  }
+
+  function spectrogram(L, R, ch, n, sr){
+    var re=new Float32Array(FFTN), im=new Float32Array(FFTN), bins=FFTN>>1;
+    var mag=new Float32Array(bins), spec=new Uint8Array(FRAMES*BANDS), cen=new Float32Array(FRAMES);
+    var raw=new Float32Array(FRAMES*BANDS), maxMag=1e-9;
+    var edges=new Float32Array(BANDS+1);
+    var lo=Math.log(BAND_LO), hi=Math.log(Math.min(BAND_HI, sr/2));
+    for (var e=0; e<=BANDS; e++) edges[e] = Math.exp(lo+(hi-lo)*e/BANDS) * FFTN / sr;
+    var binHz = sr/FFTN, cLo=Math.log(CENT_LO), cHi=Math.log(CENT_HI);
+    var hop = (n-FFTN) / Math.max(1, FRAMES-1);
+
+    for (var fr=0; fr<FRAMES; fr++){
+      var st = Math.max(0, Math.min(n-FFTN, Math.round(fr*hop)));
+      for (var i=0; i<FFTN; i++){
+        var s = st+i;
+        var v = s<n ? (ch>1 ? (L[s]+R[s])*0.5 : L[s]) : 0;
+        re[i]=v*hann[i]; im[i]=0;
+      }
+      fft.run(re, im);
+      var wsum=0, msum=0;
+      for (var k=1; k<bins; k++){
+        var m = Math.sqrt(re[k]*re[k]+im[k]*im[k])/(FFTN*0.25);
+        mag[k]=m;
+        var fq=k*binHz;
+        if (fq>=40 && fq<=12000){ wsum += m*Math.log(fq); msum += m; }
+      }
+      var c = msum>1e-7 ? Math.exp(wsum/msum) : CENT_LO;
+      cen[fr] = Math.max(0, Math.min(1, (Math.log(Math.max(c,1))-cLo)/(cHi-cLo)));
+      for (var bd=0; bd<BANDS; bd++){
+        var k0=Math.max(1,Math.floor(edges[bd])), k1=Math.max(k0+1,Math.ceil(edges[bd+1]));
+        if (k1>bins) k1=bins;
+        var acc=0, cc=0;
+        for (var kk=k0; kk<k1; kk++){ acc+=mag[kk]; cc++; }
+        var val = cc?acc/cc:0;
+        raw[fr*BANDS+bd]=val;
+        if (val>maxMag) maxMag=val;
+      }
+    }
+    var floorDb=-68;
+    for (var q=0; q<raw.length; q++){
+      var db = 20*Math.log10((raw[q]/maxMag)+1e-9);
+      var t = (db-floorDb)/-floorDb;
+      spec[q] = t<=0?0 : t>=1?255 : (t*255)|0;
+    }
+    return { spec:spec, centroid:cen };
+  }
+
+  function centAt(t){
+    if (!data) return 0;
+    var f = t*(FRAMES-1), i = f|0;
+    if (i >= FRAMES-1) return data.centroid[FRAMES-1];
+    var k = f-i;
+    return data.centroid[i]*(1-k) + data.centroid[i+1]*k;
+  }
+
+  // ---------- loudness: 400 ms blocks, absolute then relative gate ----------
+  function gatedRms(d){
+    var per = d.duration/BUCKETS, blk = Math.max(1, Math.round(0.4/per)), blocks = [];
+    for (var i = 0; i + blk <= BUCKETS; i += blk){
+      var acc = 0;
+      for (var j = 0; j < blk; j++){ var v = d.rms[i+j]; acc += v*v; }
+      var m = Math.sqrt(acc/blk);
+      if (m > 0.000316) blocks.push(m);          // -70 dBFS absolute gate
+    }
+    if (!blocks.length) return 0;
+    var s1 = 0, k;
+    for (k = 0; k < blocks.length; k++) s1 += blocks[k]*blocks[k];
+    var thr = Math.sqrt(s1/blocks.length) * 0.3162;   // -10 dB relative gate
+    var s2 = 0, c2 = 0;
+    for (k = 0; k < blocks.length; k++) if (blocks[k] >= thr){ s2 += blocks[k]*blocks[k]; c2++; }
+    return c2 ? Math.sqrt(s2/c2) : Math.sqrt(s1/blocks.length);
+  }
+
+  function percentilePeak(d, q){
+    var a = Array.prototype.slice.call(d.peak).sort(function(x,y){ return x-y; });
+    return a[Math.min(a.length-1, Math.floor(a.length*q))] || d.globalPeak;
+  }
+
+  // ---------- index points ----------
+  function findIndexes(d){
+    var bd = d.duration/BUCKETS, minGap = Math.max(2, Math.round(MIN_GAP/bd));
+    var out=[], i=0;
+    while (i < BUCKETS){
+      while (i < BUCKETS && d.rms[i] < SILENCE) i++;
+      if (i >= BUCKETS) break;
+      var s=i, last=i;
+      while (i < BUCKETS){
+        if (d.rms[i] >= SILENCE) last = i;
+        else if (i-last >= minGap) break;
+        i++;
+      }
+      if ((last+1-s)*bd >= MIN_TRACK) out.push({ s:s*bd, e:(last+1)*bd });
+    }
+    if (!out.length) out = [{ s:0, e:d.duration }];
+    return out;
+  }
+  function renderToc(){
+    tocEl.innerHTML = '';
+    if (!data) return;
+    el.tocCount.textContent = data.idx.length + (data.idx.length===1?' index':' indexes');
+    data.idx.forEach(function(tr, i){
+      var b = document.createElement('button');
+      b.innerHTML = '<span class="tno">'+pad(i+1)+'</span><span>'+msf(tr.s)+'</span><span class="tdur">'+ms(tr.e-tr.s)+'</span>';
+      b.addEventListener('click', function(){ seek(tr.s); });
+      tocEl.appendChild(b);
+    });
+  }
+  function idxAt(t){
+    if (!data) return 0;
+    for (var i = data.idx.length-1; i >= 0; i--) if (t >= data.idx[i].s - 0.001) return i;
+    return 0;
+  }
+
+  // ---------- simulate a 1990-era master ----------
+  // Two gentle shelf cuts, then upward expansion against the track's own
+  // 95th-percentile level. Gain is recomputed every 32 samples and ramped
+  // between, which keeps a 12-million-sample pass fast without stepping.
+  function makeVintage(srcBuf, ref){
+    var ch = srcBuf.numberOfChannels, n = srcBuf.length, sr = srcBuf.sampleRate;
+    var out = actx.createBuffer(ch, n, sr);
+    var ins = [], outs = [], lp = [], hp = [], c;
+    for (c = 0; c < ch; c++){ ins.push(srcBuf.getChannelData(c)); outs.push(out.getChannelData(c)); lp.push(0); hp.push(0); }
+
+    var aLow = Math.exp(-TAU*70/sr), aHigh = Math.exp(-TAU*8000/sr);
+    var cutLow = 1 - Math.pow(10, -2.5/20), cutHigh = 1 - Math.pow(10, -2.0/20);
+    // fast follower sees transients, slow one sees program level
+    var fAtk = Math.exp(-1/(0.001*sr)), fRel = Math.exp(-1/(0.030*sr));
+    var sAtk = Math.exp(-1/(0.200*sr)), sRel = Math.exp(-1/(0.400*sr));
+    var PUNCH = 0.85, MACRO = 0.30, BLK = 32;
+    var ef = 0, es = 0, pk = 0, gPrev = 1, i, base, end;
+
+    for (base = 0; base < n; base += BLK){
+      end = Math.min(n, base + BLK);
+      for (i = base; i < end; i++){
+        var m = 0;
+        for (c = 0; c < ch; c++){
+          var x = ins[c][i];
+          lp[c] = aLow*lp[c] + (1-aLow)*x;
+          hp[c] = aHigh*hp[c] + (1-aHigh)*x;
+          var y = x - lp[c]*cutLow - (x - hp[c])*cutHigh;
+          outs[c][i] = y;
+          var a = y < 0 ? -y : y;
+          if (a > m) m = a;
+        }
+        ef = m > ef ? fAtk*ef + (1-fAtk)*m : fRel*ef + (1-fRel)*m;
+        es = m > es ? sAtk*es + (1-sAtk)*m : sRel*es + (1-sRel)*m;
+      }
+      // how far this moment pokes above its own local average, restored
+      var pop = Math.max(ef, 1e-6) / Math.max(es, 1e-6);
+      var gNext = Math.pow(pop, PUNCH) * Math.pow(Math.max(es,1e-6)/ref, MACRO);
+      if (gNext < 0.02) gNext = 0.02; else if (gNext > 8) gNext = 8;
+      var span = end - base;
+      for (i = base; i < end; i++){
+        var g = gPrev + (gNext - gPrev) * ((i - base + 1) / span);
+        for (c = 0; c < ch; c++){
+          var v = outs[c][i] * g;
+          outs[c][i] = v;
+          var av = v < 0 ? -v : v;
+          if (av > pk) pk = av;
+        }
+      }
+      gPrev = gNext;
+    }
+    var norm = pk > 0 ? Math.pow(10, -1.0/20)/pk : 1;
+    for (c = 0; c < ch; c++){ var o = outs[c]; for (i = 0; i < n; i++) o[i] *= norm; }
+    return out;
+  }
+
+  // ---------- and the other direction: a 2026 commercial master ----------
+  function makeLoud(srcBuf, gatedNow){
+    var ch = srcBuf.numberOfChannels, n = srcBuf.length, sr = srcBuf.sampleRate;
+    var out = actx.createBuffer(ch, n, sr);
+    var ins = [], outs = [], c, i, base, end;
+    for (c = 0; c < ch; c++){ ins.push(srcBuf.getChannelData(c)); outs.push(out.getChannelData(c)); }
+    var CEIL = Math.pow(10, -0.3/20);
+    var pre = Math.max(1, Math.min(32, Math.pow(10,-9/20) / Math.max(gatedNow, 1e-6)));
+    var atk = Math.exp(-1/(0.0005*sr)), rel = Math.exp(-1/(0.060*sr));
+    var e = 0, gPrev = 1, BLK = 32;
+
+    for (base = 0; base < n; base += BLK){
+      end = Math.min(n, base + BLK);
+      for (i = base; i < end; i++){
+        var m = 0;
+        for (c = 0; c < ch; c++){ var a = ins[c][i]*pre; if (a < 0) a = -a; if (a > m) m = a; }
+        e = m > e ? atk*e + (1-atk)*m : rel*e + (1-rel)*m;
+      }
+      var gNext = e > CEIL ? CEIL/e : 1;
+      var span = end - base;
+      for (i = base; i < end; i++){
+        var g = gPrev + (gNext - gPrev) * ((i - base + 1) / span);
+        for (c = 0; c < ch; c++){
+          var v = ins[c][i] * pre * g;
+          if (v > CEIL) v = CEIL; else if (v < -CEIL) v = -CEIL;
+          outs[c][i] = v;
+        }
+      }
+      gPrev = gNext;
+    }
+    return out;
+  }
+
+  function showLoudness(){
+    function set(pfx, m){
+      var a = ['Pk','Rms','Cr'];
+      if (!m){ a.forEach(function(k){ el['v'+pfx+k].textContent = EMPTY; }); return; }
+      var pkDb = 20*Math.log10(Math.max(m.data.globalPeak, 1e-7));
+      var rmDb = 20*Math.log10(Math.max(m.data.gated, 1e-7));
+      el['v'+pfx+'Pk'].textContent = pkDb.toFixed(1);
+      el['v'+pfx+'Rms'].textContent = rmDb.toFixed(1);
+      el['v'+pfx+'Cr'].textContent = (pkDb - rmDb).toFixed(1);
+    }
+    set('Vin', masters.vintage); set('Mod', masters.modern); set('Lou', masters.loud);
+    var map = { vintage:'Vin', modern:'Mod', loud:'Lou' };
+    ['Vin','Mod','Lou'].forEach(function(pfx){
+      var on = map[active] === pfx;
+      ['Pk','Rms','Cr'].forEach(function(k){ el['v'+pfx+k].classList.toggle('on', on); });
+      el['h'+pfx.replace('Vin','Vin').replace('Mod','Mod').replace('Lou','Lou')] && 0;
+    });
+    el.hVin.classList.toggle('on', active==='vintage');
+    el.hMod.classList.toggle('on', active==='modern');
+    el.hLou.classList.toggle('on', active==='loud');
+  }
+
+  function pressMaster(){
+    document.getElementById('mVintage').setAttribute('aria-pressed', active==='vintage'?'true':'false');
+    document.getElementById('mModern').setAttribute('aria-pressed', active==='modern'?'true':'false');
+    document.getElementById('mLoud').setAttribute('aria-pressed', active==='loud'?'true':'false');
+  }
+
+  function setMaster(name){
+    if (name === active || !masters.modern) return;
+    var was = playing, at = position();
+    if (playing) stop(false);
+    var go = function(){
+      active = name;
+      buffer = masters[name].buffer;
+      data = masters[name].data;
+      pressMaster(); showLoudness();
+      offset = Math.min(at, buffer.duration);
+      renderAll();
+      if (was) play();
+    };
+    if (!masters[name]){
+      veil.textContent = name === 'vintage' ? 'Cutting a 1990 master' : 'Cutting a 2026 master';
+      veil.classList.add('on');
+      setTimeout(function(){
+        var mb = name === 'vintage'
+          ? makeVintage(masters.modern.buffer, percentilePeak(masters.modern.data, 0.95))
+          : makeLoud(masters.modern.buffer, masters.modern.data.gated);
+        var md = analyze(mb);
+        md.idx = findIndexes(md);
+        md.gated = gatedRms(md);
+        masters[name] = { buffer: mb, data: md };
+        go();
+        veil.classList.remove('on');
+      }, 30);
+    } else { go(); }
+  }
+  document.getElementById('mModern').addEventListener('click', function(){ setMaster('modern'); });
+  document.getElementById('mVintage').addEventListener('click', function(){ setMaster('vintage'); });
+  document.getElementById('mLoud').addEventListener('click', function(){ setMaster('loud'); });
+
+  // ---------- canvas sizing ----------
+  function sizeCanvases(){
+    var dpr = Math.min(2, window.devicePixelRatio||1);
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return false;
+    geo.dpr = dpr;
+    discCv.width = discStatic.width = Math.round(w*dpr);
+    discCv.height = discStatic.height = Math.round(h*dpr);
+    var R = Math.min(discCv.width, discCv.height)/2;
+    geo.cx = discCv.width/2; geo.cy = discCv.height/2; geo.R = R;
+    geo.rOut = R*0.945; geo.rIn = R*0.235; geo.rHub = R*0.145;
+    geo.pitch = (geo.rOut-geo.rIn)/TURNS;
+    linCv.width = linStatic.width = Math.round(strip.clientWidth*dpr);
+    linCv.height = linStatic.height = Math.round(strip.clientHeight*dpr);
+    pipCv.width = pipCv.height = PIP_PX;
+    return true;
+  }
+
+  // ---------- glow: downscale twice, add back additively ----------
+  var bloomA = document.createElement('canvas'), bloomB = document.createElement('canvas');
+  function bloom(src, amount){
+    var w = src.width, h = src.height;
+    if (w < 16 || h < 16) return;
+    bloomA.width = Math.max(2, w>>3); bloomA.height = Math.max(2, h>>3);
+    bloomB.width = Math.max(2, w>>5); bloomB.height = Math.max(2, h>>5);
+    var a = bloomA.getContext('2d'), b = bloomB.getContext('2d');
+    a.clearRect(0,0,bloomA.width,bloomA.height);
+    a.drawImage(src, 0, 0, bloomA.width, bloomA.height);
+    b.clearRect(0,0,bloomB.width,bloomB.height);
+    b.drawImage(bloomA, 0, 0, bloomB.width, bloomB.height);
+    var c = src.getContext('2d');
+    c.save();
+    c.globalCompositeOperation = 'lighter';
+    c.imageSmoothingEnabled = true;
+    c.globalAlpha = amount;       c.drawImage(bloomA, 0, 0, w, h);
+    c.globalAlpha = amount * 0.8; c.drawImage(bloomB, 0, 0, w, h);
+    c.restore();
+  }
+
+  // ---------- disc pieces ----------
+  function drawBody(c){
+    var cx=geo.cx, cy=geo.cy, R=geo.R, dpr=geo.dpr;
+    var g = c.createRadialGradient(cx,cy,R*0.1,cx,cy,R);
+    g.addColorStop(0,'#141822'); g.addColorStop(0.55,'#0F131B'); g.addColorStop(1,'#0B0E15');
+    c.fillStyle = g;
+    c.beginPath(); c.arc(cx,cy,R*0.995,0,TAU); c.fill();
+
+    // bare disc: the pregroove nobody wrote to
+    if (data){
+      var uEnd = songU(1);
+      c.strokeStyle = 'rgba(88,96,112,0.13)';
+      c.lineWidth = Math.max(0.6, dpr*0.8);
+      for (var k = Math.ceil(uEnd*TURNS); k < TURNS; k++){
+        var r = radOf(k/TURNS);
+        c.beginPath(); c.arc(cx,cy,r,0,TAU); c.stroke();
+      }
+      // where the program stops
+      var rEnd = radOf(uEnd);
+      c.strokeStyle = 'rgba(224,169,74,0.5)';
+      c.lineWidth = 1*dpr;
+      c.setLineDash([3*dpr, 5*dpr]);
+      c.beginPath(); c.arc(cx,cy,rEnd,0,TAU); c.stroke();
+      c.setLineDash([]);
+    }
+
+    c.strokeStyle = 'rgba(90,97,112,0.32)'; c.lineWidth = 1*dpr;
+    c.setLineDash([2*dpr, 5*dpr]);
+    c.beginPath(); c.arc(cx,cy,geo.rIn-geo.pitch/2,0,TAU); c.stroke();
+    c.beginPath(); c.arc(cx,cy,geo.rOut+geo.pitch/2,0,TAU); c.stroke();
+    c.setLineDash([]);
+  }
+
+  function drawRibbon(c, b0, b1, scale){
+    if (!data) return;
+    scale = scale || 1;
+    var norm = 1/refPeak;
+    var uEnd = songU(1);
+    var total = Math.PI*TURNS*(geo.rIn + geo.rIn + (geo.rOut-geo.rIn)*uEnd)*uEnd;
+    c.lineCap = 'butt';
+    c.lineWidth = Math.max(0.7/scale, (total/BUCKETS)*1.4);
+    var hm = geo.pitch*0.47;
+    for (var b = b0; b < b1; b++){
+      var t = b/(BUCKETS-1), u = songU(t);
+      var r = radOf(u), th = angOf(u);
+      var aL = Math.min(1, data.peakL[b]*norm), aR = Math.min(1, data.peakR[b]*norm);
+      var hIn = hm*(0.05+0.95*Math.pow(aL,0.72)), hOut = hm*(0.05+0.95*Math.pow(aR,0.72));
+      var ci = (centAt(t)*255)|0;
+      var al = 0.30 + 0.70*Math.min(1, Math.pow(data.rms[b]*norm,0.5)*1.8);
+      c.strokeStyle = 'rgba('+LUT[ci*3]+','+LUT[ci*3+1]+','+LUT[ci*3+2]+','+al.toFixed(3)+')';
+      var ct = Math.cos(th), st = Math.sin(th);
+      c.beginPath();
+      c.moveTo(geo.cx+ct*(r-hIn), geo.cy+st*(r-hIn));
+      c.lineTo(geo.cx+ct*(r+hOut), geo.cy+st*(r+hOut));
+      c.stroke();
+    }
+  }
+
+  function drawIndexMarks(c){
+    if (!data || data.idx.length < 2) return;
+    c.lineWidth = 1.5*geo.dpr; c.strokeStyle = 'rgba(255,255,255,0.7)';
+    data.idx.forEach(function(tr, i){
+      if (!i) return;
+      var u = songU(tr.s/data.duration), r = radOf(u), th = angOf(u);
+      var ct = Math.cos(th), st = Math.sin(th), h = geo.pitch*0.6;
+      c.beginPath();
+      c.moveTo(geo.cx+ct*(r-h), geo.cy+st*(r-h));
+      c.lineTo(geo.cx+ct*(r+h), geo.cy+st*(r+h));
+      c.stroke();
+    });
+  }
+
+  function drawHub(c){
+    var cx=geo.cx, cy=geo.cy, R=geo.R, dpr=geo.dpr;
+    c.globalCompositeOperation = 'destination-out';
+    c.beginPath(); c.arc(cx,cy,geo.rHub,0,TAU); c.fill();
+    c.globalCompositeOperation = 'source-over';
+    c.fillStyle = '#12151D'; c.beginPath(); c.arc(cx,cy,geo.rHub,0,TAU); c.fill();
+    c.strokeStyle = 'rgba(138,106,46,0.55)'; c.lineWidth = 1*dpr;
+    c.beginPath(); c.arc(cx,cy,geo.rHub,0,TAU); c.stroke();
+    c.fillStyle = '#0A0C11'; c.beginPath(); c.arc(cx,cy,R*0.052,0,TAU); c.fill();
+  }
+
+  function drawLabels(c){
+    c.fillStyle = 'rgba(90,97,112,0.9)';
+    c.font = (9.5*geo.dpr)+"px 'IBM Plex Mono',ui-monospace,Menlo,monospace";
+    c.textAlign = 'center';
+    if ('letterSpacing' in c) c.letterSpacing = (1.2*geo.dpr)+'px';
+    c.fillText('LEAD-IN', geo.cx, geo.cy-(geo.rHub+geo.rIn)/2+3*geo.dpr);
+    c.fillText('BARE DISC', geo.cx, geo.cy-geo.rOut-8*geo.dpr);
+    if ('letterSpacing' in c) c.letterSpacing = '0px';
+  }
+
+  function renderDiscStatic(){
+    var c = discStatic.getContext('2d');
+    c.setTransform(1,0,0,1,0,0);
+    c.clearRect(0,0,discStatic.width,discStatic.height);
+    drawBody(c);
+    drawRibbon(c, 0, BUCKETS);
+    bloom(discStatic, 0.62);
+    drawIndexMarks(c);
+    drawHub(c);
+    drawLabels(c);
+  }
+
+  function renderLinearStatic(){
+    var c = linStatic.getContext('2d');
+    var W=linStatic.width, H=linStatic.height, mid=H/2;
+    c.clearRect(0,0,W,H);
+    c.fillStyle='#171B25'; c.fillRect(0,0,W,H);
+    c.strokeStyle='rgba(90,97,112,0.22)'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(0,mid); c.lineTo(W,mid); c.stroke();
+    if (!data) return;
+    var norm = 1/refPeak, cols = Math.floor(W);
+    for (var x=0; x<cols; x++){
+      var b0=Math.floor(x*BUCKETS/cols), b1=Math.max(b0+1,Math.floor((x+1)*BUCKETS/cols));
+      var pl=0, pr=0;
+      for (var b=b0; b<b1 && b<BUCKETS; b++){ if (data.peakL[b]>pl) pl=data.peakL[b]; if (data.peakR[b]>pr) pr=data.peakR[b]; }
+      var ci=(centAt(x/cols)*255)|0;
+      c.strokeStyle='rgba('+LUT[ci*3]+','+LUT[ci*3+1]+','+LUT[ci*3+2]+',0.92)';
+      c.beginPath();
+      c.moveTo(x+0.5, mid-Math.max(0.5, Math.min(1,pl*norm)*(mid-3)));
+      c.lineTo(x+0.5, mid+Math.max(0.5, Math.min(1,pr*norm)*(mid-3)));
+      c.stroke();
+    }
+    c.strokeStyle = 'rgba(224,169,74,0.55)'; c.lineWidth = 1;
+    for (var q = 0; q < NOTES.length; q++){
+      var nx = NOTES[q].at * W;
+      c.beginPath(); c.moveTo(nx, 0); c.lineTo(nx, H*0.13); c.stroke();
+      c.beginPath(); c.moveTo(nx, H*0.87); c.lineTo(nx, H); c.stroke();
+    }
+    bloom(linStatic, 0.5);
+    if (data.idx.length>1){
+      c.strokeStyle='rgba(230,233,240,0.42)'; c.lineWidth=1;
+      data.idx.forEach(function(tr,i){ if(!i) return; var x=(tr.s/data.duration)*W; c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); });
+    }
+  }
+
+  function renderAll(){
+    if (!sizeCanvases()) return;
+    renderDiscStatic(); renderLinearStatic(); paint();
+  }
+
+  // ---------- the visible slice of the ribbon at a given zoom ----------
+  function visibleBuckets(t, radialHalf){
+    var u = songU(t), uEnd = songU(1);
+    var du = radialHalf / (geo.rOut - geo.rIn);
+    var u0 = Math.max(0, u - du), u1 = Math.min(uEnd, u + du);
+    var d = data.duration;
+    var b0 = Math.max(0, Math.floor(timeAtU(u0)/d * BUCKETS) - 2);
+    var b1 = Math.min(BUCKETS, Math.ceil(timeAtU(u1)/d * BUCKETS) + 2);
+    return [b0, b1];
+  }
+
+  // ---------- the read head, with the groove straightened out ----------
+  // Isotropic magnification is useless here: one track pitch is 1.6 um across
+  // but a second of audio is 1.2 m along it. So this box stretches the two
+  // axes independently -- time across, channel level up and down.
+  function fmtSpan(v){ return v >= 1 ? v.toFixed(2)+' s' : Math.round(v*1000)+' ms'; }
+
+  function renderPip(t){
+    var W = PIP_PX, H = PIP_PX, mid = H/2;
+    pctx.setTransform(1,0,0,1,0,0);
+    pctx.fillStyle = '#0B0E15';
+    pctx.fillRect(0,0,W,H);
+    if (!data) return;
+
+    var S = Math.max(0.004, pipWindow / zoom);
+    var d = data.duration, sr = data.sr, n = data.L.length;
+    var tc = t * d, amp = (mid - 7) / (data.globalPeak > 0 ? data.globalPeak : 1);
+
+    pctx.lineWidth = 1;
+    for (var x = 0; x < W; x++){
+      var ta = tc + ((x)/W - 0.5) * S;
+      var tb = tc + ((x+1)/W - 0.5) * S;
+      if (tb < 0 || ta > d) continue;
+      var i0 = Math.max(0, Math.floor(ta*sr)), i1 = Math.min(n, Math.ceil(tb*sr));
+      if (i1 <= i0) i1 = Math.min(n, i0+1);
+      var lTop=0, lBot=0, rTop=0, rBot=0;
+      for (var i = i0; i < i1; i++){
+        var vl = data.L[i], vr = data.R[i];
+        if (vl > lTop) lTop = vl; else if (vl < lBot) lBot = vl;
+        if (vr > rTop) rTop = vr; else if (vr < rBot) rBot = vr;
+      }
+      var ci = (centAt(Math.max(0, Math.min(1, ta/d)))*255)|0;
+      pctx.strokeStyle = 'rgba('+LUT[ci*3]+','+LUT[ci*3+1]+','+LUT[ci*3+2]+',0.95)';
+      // left channel toward the hub (up), right channel toward the rim (down)
+      var lo = mid - Math.max(0.5, (lTop-lBot)*0.5*amp);
+      var hi = mid + Math.max(0.5, (rTop-rBot)*0.5*amp);
+      pctx.beginPath();
+      pctx.moveTo(x+0.5, lo);
+      pctx.lineTo(x+0.5, hi);
+      pctx.stroke();
+    }
+
+    pctx.strokeStyle = 'rgba(90,97,112,0.30)'; pctx.lineWidth = 1;
+    pctx.beginPath(); pctx.moveTo(0,mid); pctx.lineTo(W,mid); pctx.stroke();
+    pctx.strokeStyle = 'rgba(255,255,255,0.85)'; pctx.lineWidth = 1.5;
+    pctx.beginPath(); pctx.moveTo(W/2,0); pctx.lineTo(W/2,H); pctx.stroke();
+    pctx.fillStyle = 'rgba(90,97,112,0.85)';
+    pctx.font = "10px 'IBM Plex Mono',ui-monospace,Menlo,monospace";
+    pctx.textAlign = 'left';
+    pctx.fillText('L', 6, 14);
+    pctx.fillText('R', 6, H-6);
+
+    el.pipSpan.textContent = fmtSpan(S) + ' across';
+    el.pVal.textContent = fmtSpan(pipWindow);
+  }
+
+  // ---------- playhead ----------
+  function position(){
+    if (!buffer) return 0;
+    var t = playing ? offset+(actx.currentTime-startedAt) : offset;
+    return Math.max(0, Math.min(buffer.duration, t));
+  }
+
+  function paint(){
+    // ease the zoom
+    if (Math.abs(zoom - zoomTarget) > 0.004) zoom += (zoomTarget - zoom) * 0.14;
+    else zoom = zoomTarget;
+    el.zVal.textContent = zoom.toFixed(1) + '\u00D7';
+
+    var W = discCv.width, H = discCv.height;
+    var p = position(), t = data && data.duration ? Math.min(1, p/data.duration) : 0;
+    var u = songU(t), th = angOf(u), ct = Math.cos(th), st = Math.sin(th), r = radOf(u);
+    var hx = geo.cx+ct*r, hy = geo.cy+st*r;
+
+    dctx.setTransform(1,0,0,1,0,0);
+    dctx.clearRect(0,0,W,H);
+
+    if (!data || zoom <= 1.004){
+      dctx.drawImage(discStatic, 0, 0);
+    } else {
+      // redraw the visible slice at native resolution instead of scaling a bitmap
+      dctx.fillStyle = '#0A0C11';
+      dctx.fillRect(0,0,W,H);
+      dctx.save();
+      dctx.translate(W/2, H/2);
+      dctx.scale(zoom, zoom);
+      dctx.translate(-hx, -hy);
+      drawBody(dctx);
+      var vb = visibleBuckets(t, (Math.max(W,H)/2)/zoom);
+      drawRibbon(dctx, vb[0], vb[1], zoom);
+      drawIndexMarks(dctx);
+      drawHub(dctx);
+      dctx.restore();
+    }
+
+    lctx.setTransform(1,0,0,1,0,0);
+    lctx.clearRect(0,0,linCv.width,linCv.height);
+    lctx.drawImage(linStatic,0,0);
+    if (!data){ return; }
+
+    // playhead, in screen space
+    var sx = zoom<=1.004 ? hx : W/2, sy = zoom<=1.004 ? hy : H/2;
+    if (zoom <= 1.004){
+      dctx.strokeStyle = 'rgba(230,233,240,0.11)'; dctx.lineWidth = 1*geo.dpr;
+      dctx.beginPath();
+      dctx.moveTo(geo.cx+ct*geo.rHub, geo.cy+st*geo.rHub);
+      dctx.lineTo(geo.cx+ct*geo.R, geo.cy+st*geo.R);
+      dctx.stroke();
+    }
+    dctx.save();
+    dctx.globalCompositeOperation = 'lighter';
+    var halo = dctx.createRadialGradient(sx, sy, 0, sx, sy, 22*geo.dpr);
+    halo.addColorStop(0, 'rgba(255,255,255,0.55)');
+    halo.addColorStop(0.35, 'rgba(224,169,74,0.28)');
+    halo.addColorStop(1, 'rgba(224,169,74,0)');
+    dctx.fillStyle = halo;
+    dctx.beginPath(); dctx.arc(sx, sy, 22*geo.dpr, 0, TAU); dctx.fill();
+    dctx.shadowColor = 'rgba(255,255,255,0.95)'; dctx.shadowBlur = 14*geo.dpr;
+    dctx.fillStyle = '#FFFFFF';
+    dctx.beginPath(); dctx.arc(sx, sy, 2.9*geo.dpr, 0, TAU); dctx.fill();
+    dctx.restore();
+
+    var x = t*linCv.width;
+    lctx.save();
+    lctx.globalCompositeOperation = 'lighter';
+    var g2 = lctx.createLinearGradient(x-16*geo.dpr, 0, x+16*geo.dpr, 0);
+    g2.addColorStop(0, 'rgba(224,169,74,0)');
+    g2.addColorStop(0.5, 'rgba(224,169,74,0.42)');
+    g2.addColorStop(1, 'rgba(224,169,74,0)');
+    lctx.fillStyle = g2;
+    lctx.fillRect(x-16*geo.dpr, 0, 32*geo.dpr, linCv.height);
+    lctx.restore();
+    lctx.strokeStyle = '#FFFFFF'; lctx.lineWidth = 1.2*geo.dpr;
+    lctx.shadowColor = 'rgba(255,255,255,0.9)'; lctx.shadowBlur = 8*geo.dpr;
+    lctx.beginPath(); lctx.moveTo(x,0); lctx.lineTo(x,linCv.height); lctx.stroke();
+    lctx.shadowBlur = 0;
+
+    renderPip(t);
+
+    el.rPos.textContent = msf(p);
+    el.cPos.textContent = msf(p);
+    el.rRev.textContent = commas(revsAt(p)) + ' / ' + commas(FULL_REVS);
+    el.rRad.textContent = radiusAt(p).toFixed(2) + ' mm';
+    el.rRpm.textContent = Math.round(CLV / (TAU * radiusAt(p)) * 60) + ' rpm';
+    var bi = Math.min(BUCKETS-1, Math.floor(t*BUCKETS));
+    el.rLevel.textContent = dbfs(data.rms[bi]);
+
+    if (!holding) showNote(noteIndex(t));
+
+    var ii = idxAt(p);
+    if (ii !== curIdx){
+      curIdx = ii;
+      var kids = tocEl.children;
+      for (var i=0; i<kids.length; i++) kids[i].setAttribute('aria-current', i===ii?'true':'false');
+    }
+    if (!playing && Math.abs(zoom - zoomTarget) > 0.004) requestAnimationFrame(paint);
+  }
+
+  function loop(){
+    paint();
+    if (playing){
+      if (position() >= buffer.duration-0.001){ stop(true); return; }
+      raf = requestAnimationFrame(loop);
+    }
+  }
+
+  // ---------- transport ----------
+  function play(){
+    if (!buffer) return;
+    if (actx.state === 'suspended') actx.resume();
+    if (offset >= buffer.duration-0.01) offset = 0;
+    src = actx.createBufferSource();
+    src.buffer = buffer;
+    src.connect(actx.destination);
+    startedAt = actx.currentTime;
+    src.start(0, offset);
+    playing = true;
+    playBtn.textContent = 'Pause';
+    if (zoomTarget <= 1.004){ zoomTarget = 5; autoZoomed = true; }
+    raf = requestAnimationFrame(loop);
+  }
+  function stop(toEnd){
+    if (src){ try{ src.stop(); }catch(e){} src.disconnect(); src=null; }
+    offset = toEnd ? 0 : position();
+    playing = false;
+    playBtn.textContent = 'Play';
+    cancelAnimationFrame(raf);
+    if (autoZoomed){ zoomTarget = 1; autoZoomed = false; }
+    paint();
+  }
+  function toggle(){ playing ? stop(false) : play(); }
+  function seek(t){
+    if (!buffer) return;
+    var was = playing;
+    if (playing) stop(false);
+    offset = Math.max(0, Math.min(buffer.duration, t));
+    if (was) play(); else paint();
+  }
+  playBtn.addEventListener('click', toggle);
+  document.addEventListener('keydown', function(e){
+    if (e.code === 'Space' && e.target.tagName !== 'BUTTON'){ e.preventDefault(); toggle(); }
+  });
+  strip.addEventListener('click', function(e){
+    if (!buffer) return;
+    var rect = strip.getBoundingClientRect();
+    seek(((e.clientX-rect.left)/rect.width)*buffer.duration);
+  });
+  discCv.addEventListener('click', function(e){
+    if (!buffer) return;
+    var rect = discCv.getBoundingClientRect();
+    var px = (e.clientX-rect.left)/rect.width*discCv.width;
+    var py = (e.clientY-rect.top)/rect.height*discCv.height;
+    if (zoom > 1.004){
+      var pt = position(), pu = songU(Math.min(1, pt/data.duration));
+      var pth = angOf(pu), pr = radOf(pu);
+      px = (px - discCv.width/2)/zoom + geo.cx+Math.cos(pth)*pr;
+      py = (py - discCv.height/2)/zoom + geo.cy+Math.sin(pth)*pr;
+    }
+    var dx = px - geo.cx, dy = py - geo.cy;
+    var rr = Math.sqrt(dx*dx+dy*dy);
+    var uEst = (rr-geo.rIn)/(geo.rOut-geo.rIn);
+    var frac = (Math.atan2(dy,dx)+Math.PI/2)/TAU; frac -= Math.floor(frac);
+    var u = (Math.round(uEst*TURNS-frac)+frac)/TURNS;
+    if (u < 0 || u > songU(1)) return;
+    seek(Math.max(0, Math.min(data.duration, timeAtU(u))));
+  });
+
+  // ---------- zoom controls ----------
+  function setZoom(z){
+    zoomTarget = Math.max(1, Math.min(64, z));
+    autoZoomed = false;
+    if (!playing) requestAnimationFrame(paint);
+  }
+  document.getElementById('zIn').addEventListener('click', function(){ setZoom(zoomTarget*1.6); });
+  document.getElementById('zOut').addEventListener('click', function(){ setZoom(zoomTarget/1.6); });
+  function setPip(v){
+    pipWindow = Math.max(0.01, Math.min(16, v));
+    el.pVal.textContent = fmtSpan(pipWindow);
+    if (!playing) requestAnimationFrame(paint);
+  }
+  document.getElementById('pIn').addEventListener('click', function(){ setPip(pipWindow/2); });
+  document.getElementById('pOut').addEventListener('click', function(){ setPip(pipWindow*2); });
+
+  // ---------- loading ----------
+  function present(m){
+    data = analyze(buffer);
+    data.idx = findIndexes(data);
+    data.gated = gatedRms(data);
+    refPeak = 1;
+    masters.modern = { buffer: buffer, data: data };
+    masters.vintage = null; masters.loud = null;
+    active = 'modern';
+    pressMaster(); showLoudness();
+    var d = buffer.duration;
+    el.rFile.textContent = m.title; el.rFile.title = m.title;
+    el.rArtist.textContent = m.artist || EMPTY;
+    el.rAlbum.textContent = m.album || EMPTY;
+    el.rowArtist.style.display = m.artist ? '' : 'none';
+    el.rowAlbum.style.display = m.album ? '' : 'none';
+    el.rFmt.textContent = (buffer.sampleRate/1000).toFixed(1)+' kHz ' + DOT + ' 16-bit ' + DOT + ' ' +
+      (buffer.numberOfChannels===1?'mono':buffer.numberOfChannels===2?'stereo':buffer.numberOfChannels+' ch');
+    el.rSrc.textContent = m.source || 'unknown';
+    el.rowSrc.style.display = m.source ? '' : 'none';
+    el.rLen.textContent = msf(d);
+    el.cLen.textContent = msf(d);
+    el.rPeak.textContent = dbfs(data.globalPeak);
+
+    el.rProg.textContent = ms(d) + ' / ' + ms(FULL_TIME);
+    el.rRevs.textContent = commas(revsAt(d)) + ' / ' + commas(FULL_REVS);
+    el.rBand.textContent = R0.toFixed(2) + ' \u2013 ' + radiusAt(d).toFixed(2) + ' mm';
+    el.rPit.textContent = (CLV*d/1000).toFixed(0) + ' m / ' + commas(FULL_LEN/1000) + ' m';
+    el.discShare.textContent = (d/FULL_TIME*100).toFixed(1) + '% used';
+
+    el.rateNote.innerHTML = 'A CD is <b>44,100 Hz</b> by definition, so everything here is analyzed at that rate. ' +
+      (m.source ? 'This master was delivered at 48 kHz, and pressing it to a disc means resampling &mdash; which is exactly what happened on the way into this page. ' : '') +
+      'Your browser then plays it back through a ' + (actx.sampleRate/1000).toFixed(1) + ' kHz output.';
+    curIdx = -1; noteAt = -1;
+    buildDots(); noteAt = -1; showNote(0);
+    renderToc();
+    offset = 0;
+    renderAll();
+  }
+
+  function decodeInto(arrayBuffer, m){
+    return decodeAtCdRate(arrayBuffer).then(function(buf){
+      buffer = buf;
+      veil.textContent = 'Analyzing';
+      return new Promise(function(res){
+        setTimeout(function(){ present(m); veil.classList.remove('on'); res(); }, 16);
+      });
+    });
+  }
+
+  function loadFile(file){
+    if (!file) return;
+    stop(true);
+    veil.textContent = 'Decoding'; veil.classList.add('on');
+    var fr = new FileReader();
+    fr.onload = function(){
+      decodeInto(fr.result, { title: file.name.replace(/\.[^.]+$/, ''), artist:'', album:'' })
+        .catch(function(){
+          veil.textContent = 'Could not decode that file';
+          setTimeout(function(){ veil.classList.remove('on'); }, 2600);
+        });
+    };
+    fr.onerror = function(){
+      veil.textContent = 'Could not read that file';
+      setTimeout(function(){ veil.classList.remove('on'); }, 2600);
+    };
+    fr.readAsArrayBuffer(file);
+  }
+  document.getElementById('loadBtn').addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', function(){ loadFile(fileInput.files[0]); });
+  ['dragenter','dragover'].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); stage.classList.add('drag'); });
+  });
+  document.addEventListener('dragleave', function(e){ if (e.clientX<=0||e.clientY<=0) stage.classList.remove('drag'); });
+  document.addEventListener('drop', function(e){
+    e.preventDefault(); stage.classList.remove('drag');
+    if (e.dataTransfer && e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+  });
+
+  // ---------- boot ----------
+  function b64ToBuffer(b64){
+    var bin = atob(b64), len = bin.length, bytes = new Uint8Array(len);
+    for (var i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes.buffer;
+  }
+  function fail(msg){ veil.textContent = msg; veil.classList.add('on'); }
+  function boot(){
+    sizeCanvases();
+    var node = document.getElementById('trackData');
+    var b64 = (node.textContent || '').replace(/\s+/g, '');
+    veil.textContent = 'Decoding'; veil.classList.add('on');
+    if (b64 && b64.charAt(0) !== '_'){
+      setTimeout(function(){
+        decodeInto(b64ToBuffer(b64), TRACK).catch(function(){ fail('Could not decode the bundled track'); });
+      }, 30);
+      return;
+    }
+    // local development: pull the file from alongside the page
+    fetch('audio/the-one-who-let-you-go.mp3')
+      .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(function(ab){ return decodeInto(ab, TRACK); })
+      .catch(function(){ fail('Open an audio file to begin'); });
+  }
+  var rt = 0;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(renderAll, 150); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
+})();
+</script>
