@@ -1,3 +1,6 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
 <title>How Audio CDs Work</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +18,7 @@
   @keyframes sheenspin{ to{ transform:rotate(360deg) } }
   @keyframes pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
   *{box-sizing:border-box}
+  html,body{overflow-x:hidden;overscroll-behavior-y:none}
   body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
   .app{max-width:1200px;margin:0 auto;padding:18px 24px 34px;display:flex;flex-direction:column;gap:14px}
 
@@ -24,6 +28,7 @@
   .wordmark h1{font-family:var(--display);font-weight:700;font-size:22px;line-height:1;letter-spacing:.05em;text-transform:uppercase;margin:0;white-space:nowrap}
   .wordmark h1 em{font-style:normal;color:var(--brass);text-shadow:0 0 18px rgba(224,169,74,.55)}
   .wordmark p{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint)}
+  .controls{display:contents}
   .masthead-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
 
   button{font:inherit;cursor:pointer}
@@ -115,6 +120,7 @@
   .notes-fig{border-left:1px solid var(--rule-soft);padding-left:18px;min-height:172px;display:flex;flex-direction:column;gap:8px;justify-content:center}
   .notes-fig svg{display:block;width:100%;height:auto}
   .notes-fig canvas{display:block;width:100%;height:auto;border-radius:2px}
+  .swipe{display:none}
   .fig-cap{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);text-align:center}
   .fig-ctl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
   .fig-ctl input[type=range]{flex:1;accent-color:var(--brass);height:3px}
@@ -150,11 +156,56 @@
   .colophon{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);border-top:1px solid var(--rule);padding-top:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   @media (max-width:900px){
-    .masthead{position:static;margin:0;padding:9px 0}
+    .app{padding:0 12px 24px;gap:12px}
+    .masthead{position:sticky;top:0;margin:0 -12px;padding:8px 12px 7px;gap:8px 12px;
+      background:rgba(10,12,17,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .wordmark{order:0}
+    .wordmark h1{font-size:19px}
+    .masthead-actions{order:1}
+    .btn{padding:8px 12px;font-size:10px}
+    .controls{order:2;display:flex;align-items:center;gap:16px;width:100%;
+      overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:1px}
+    .controls::-webkit-scrollbar{display:none}
+    .tgroup{flex:none}
+    .tlabel{font-size:9px;letter-spacing:.12em}
     .console{grid-template-columns:minmax(0,1fr)}
-    .wordmark h1{font-size:21px}
-    .app{padding:22px 16px 32px}
-    .pip{width:132px}.pip canvas{width:132px;height:132px}
+    .rail{gap:12px}
+    .pip{width:116px;right:10px;top:10px}
+    .pip canvas{width:116px;height:116px}
+    .pip-bar{font-size:8px;padding:4px 5px}
+    .stage-note{font-size:9px;left:10px;bottom:9px}
+    .notes{grid-template-columns:auto minmax(0,1fr);padding:13px 14px 12px;gap:0 12px}
+    .notes-num{font-size:26px}
+    .notes-at{display:none}
+    .notes-of{font-size:9px;margin-top:3px}
+    .notes-dots{display:none}
+    .notes-nav{flex-wrap:wrap;gap:8px}
+    .hold{margin-left:0}
+    .notes-body h3{font-size:17px}
+    .notes-body p{font-size:13.5px}
+    .notes-fig{grid-column:1/-1;margin-top:12px;position:relative}
+    .figscroll{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;position:relative}
+    .figscroll::-webkit-scrollbar{display:none}
+    .figscroll > svg,.figscroll > canvas{min-width:400px}
+    .swipe{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--ink-faint);text-align:right;margin-top:5px}
+    .transport{padding:10px 12px 9px;margin:0 -12px;border-radius:0;border-left:0;border-right:0}
+    .clock{font-size:16px}
+    .transport-meta{display:none}
+    .strip{height:56px}
+    .quiz{padding:13px 14px 6px}
+    .qlist{grid-template-columns:minmax(0,1fr)}
+    .colophon{font-size:9px;line-height:1.7}
+  }
+  /* fingers need bigger targets than cursors */
+  @media (pointer:coarse){
+    .stepper button{padding:11px 15px;font-size:15px}
+    .seg button{padding:11px 14px}
+    .toc button{padding:10px 6px}
+    .notes-nav button{padding:10px 14px}
+    .qlist summary{padding:4px 0}
+    .fig-ctl input[type=range]{height:26px}
   }
   @media (prefers-reduced-motion:reduce){*{transition-duration:0s!important} .sheen{animation:none}}
   input[type=file]{display:none}
@@ -168,6 +219,7 @@
       <h1>How Audio <em>CDs</em> Work</h1>
       <p>Actual size</p>
     </div>
+    <div class="controls">
     <div class="tgroup">
       <span class="tlabel">Zoom</span>
       <div class="stepper">
@@ -191,6 +243,7 @@
         <button id="mModern" aria-pressed="true">As delivered</button>
         <button id="mLoud" aria-pressed="false">2026 loud</button>
       </div>
+    </div>
     </div>
     <div class="masthead-actions">
       <button class="btn" id="loadBtn">Open file</button>
@@ -681,338 +734,272 @@
         tx(300,100,'never touched','9','var(--ink-faint)') +
         tx(210,166,'THE GOLD BAND IS THE WHOLE SONG','9','var(--brass)','middle')) }
   ];
-  // ---------- the two figures you can poke ----------
+  // ---------- the figures you can poke ----------
+  // Drawn in a 400x300 space, the width they are actually shown at, so every
+  // label lands at its true pixel size instead of being scaled to half.
   var FIGS = {};
+  var FW = 400, FH = 300, FK = 2;
 
   function figCanvas(host, cap, ctlLabel, min, max, val, step, onDraw, fmt){
     host.innerHTML = '';
+    var scroller = document.createElement('div');
+    scroller.className = 'figscroll';
+    host.appendChild(scroller);
     var cv = document.createElement('canvas');
-    cv.width = 840; cv.height = 300;
+    cv.width = FW*FK; cv.height = FH*FK;
     cv.style.width = '100%'; cv.style.height = 'auto';
     var ctl = document.createElement('div');
     ctl.className = 'fig-ctl';
     var lab = document.createElement('span'); lab.textContent = ctlLabel;
     var rng = document.createElement('input');
     rng.type = 'range'; rng.min = min; rng.max = max; rng.step = step; rng.value = val;
+    rng.setAttribute('aria-label', ctlLabel);
     var out = document.createElement('b');
     var capEl = document.createElement('div'); capEl.className = 'fig-cap'; capEl.textContent = cap;
     ctl.appendChild(lab); ctl.appendChild(rng); ctl.appendChild(out);
-    host.appendChild(cv); host.appendChild(ctl); host.appendChild(capEl);
+    scroller.appendChild(cv); host.appendChild(ctl); host.appendChild(capEl);
     var c = cv.getContext('2d');
-    function go(){ var v = parseFloat(rng.value); out.textContent = fmt(v); onDraw(c, v); }
+    function go(){
+      var v = parseFloat(rng.value);
+      out.textContent = fmt(v);
+      c.setTransform(FK,0,0,FK,0,0);
+      c.clearRect(0,0,FW,FH);
+      c.fillStyle = '#0B0E15'; c.fillRect(0,0,FW,FH);
+      onDraw(c, v);
+    }
     rng.addEventListener('input', go);
     go();
   }
+  function fset(c, size, fill){ c.font = size + "px 'IBM Plex Mono',ui-monospace,Menlo,monospace"; c.fillStyle = fill; }
 
-  // pit depth -> path difference -> interference
+  // pit depth -> extra path -> interference
   FIGS.interference = function(host, cap){
-    var LAMBDA = 500;   // nm, 780 nm laser slowed by polycarbonate (n = 1.55)
+    var LAMBDA = 500;                       // nm, in polycarbonate
     figCanvas(host, cap, 'Pit depth', 0, 190, 125, 1, function(c, d){
-      var W = 840, H = 300;
-      c.fillStyle = '#0B0E15'; c.fillRect(0,0,W,H);
-      var phi = 4*Math.PI*d/LAMBDA;             // 2d of extra path
-      var amp = Math.cos(phi/2);                // summed amplitude, equal beams
-      var I = amp*amp;
+      var phi = 4*Math.PI*d/LAMBDA, amp = Math.cos(phi/2), I = amp*amp;
 
-      // --- left: the surface in cross-section ---
-      var top = 96, dep = (d/190)*54;
-      c.strokeStyle = '#3A4252'; c.lineWidth = 2;
+      // surface in cross-section
+      var top = 62, dep = (d/190)*22, x0 = 14, x1 = 386;
+      c.fillStyle = 'rgba(58,66,82,0.30)'; c.fillRect(x0, top, x1-x0, 40);
+      c.strokeStyle = '#4A5364'; c.lineWidth = 2;
       c.beginPath();
-      c.moveTo(30, top); c.lineTo(150, top);
-      c.lineTo(150, top+dep); c.lineTo(250, top+dep); c.lineTo(250, top);
-      c.lineTo(370, top);
+      c.moveTo(x0, top); c.lineTo(150, top); c.lineTo(150, top+dep);
+      c.lineTo(250, top+dep); c.lineTo(250, top); c.lineTo(x1, top);
       c.stroke();
-      c.fillStyle = 'rgba(58,66,82,0.35)';
-      c.fillRect(30, top, 340, 120);
-      c.fillStyle = '#5A6170';
-      c.font = "13px 'IBM Plex Mono',monospace";
-      c.fillText('LAND', 70, top+30); c.fillText('PIT', 184, top+dep+26); c.fillText('LAND', 296, top+30);
+      fset(c, 10, '#5A6170');
+      c.fillText('LAND', 60, top+26); c.fillText('PIT', 190, top+dep+16); c.fillText('LAND', 300, top+26);
 
-      // beams down and back
-      [[90,top],[200,top+dep]].forEach(function(b, i){
-        c.strokeStyle = i ? '#E8548F' : '#22A8D6';
-        c.lineWidth = 2;
-        c.beginPath(); c.moveTo(b[0]-9, 26); c.lineTo(b[0]-9, b[1]); c.stroke();
-        c.beginPath(); c.moveTo(b[0]+9, b[1]); c.lineTo(b[0]+9, 26); c.stroke();
+      [[100, top, '#22A8D6'], [200, top+dep, '#E8548F']].forEach(function(b){
+        c.strokeStyle = b[2]; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(b[0]-6, 22); c.lineTo(b[0]-6, b[1]); c.stroke();
+        c.beginPath(); c.moveTo(b[0]+6, b[1]); c.lineTo(b[0]+6, 22); c.stroke();
       });
-      c.fillStyle = '#8B93A3';
-      c.fillText('extra path = 2 \u00D7 depth = ' + (2*d) + ' nm', 30, 268);
-      c.fillText('= ' + (2*d/LAMBDA).toFixed(2) + ' wavelengths', 30, 288);
+      fset(c, 9.5, '#8B93A3');
+      c.fillText('extra path = 2 x depth = ' + (2*d) + ' nm  =  ' + (2*d/LAMBDA).toFixed(2) + ' waves', x0, 16);
 
-      // --- right: the two waves and their sum ---
-      var x0 = 420, x1 = 810, mid = 76;
-      function wave(yc, phase, col, sc){
-        c.strokeStyle = col; c.lineWidth = 2; c.beginPath();
+      // the two returns and their sum
+      function wave(yc, phase, col, sc, w){
+        c.strokeStyle = col; c.lineWidth = w || 2; c.beginPath();
         for (var x = x0; x <= x1; x++){
-          var y = yc - Math.sin((x-x0)/26 + phase) * 22 * sc;
+          var y = yc - Math.sin((x-x0)/17 + phase) * 15 * sc;
           if (x === x0) c.moveTo(x,y); else c.lineTo(x,y);
         }
         c.stroke();
       }
-      wave(mid, 0, '#22A8D6', 1);
-      wave(mid+62, phi, '#E8548F', 1);
+      fset(c, 9, '#22A8D6'); c.fillText('OFF THE LAND', x0, 128);
+      wave(150, 0, '#22A8D6', 1);
+      fset(c, 9, '#E8548F'); c.fillText('OFF THE PIT', x0, 178);
+      wave(200, phi, '#E8548F', 1);
       c.strokeStyle = '#242A36'; c.lineWidth = 1;
-      c.beginPath(); c.moveTo(x0, mid+150); c.lineTo(x1, mid+150); c.stroke();
-      wave(mid+150, phi/2, '#F0B24A', Math.abs(amp)*2);
+      c.beginPath(); c.moveTo(x0, 246); c.lineTo(x1, 246); c.stroke();
+      fset(c, 9, '#F0B24A'); c.fillText('WHAT THE DETECTOR GETS', x0, 228);
+      wave(246, phi/2, '#F0B24A', Math.abs(amp), 2.5);
 
-      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
-      c.fillText('OFF THE LAND', x0, 30);
-      c.fillText('OFF THE PIT', x0, mid+40);
-      c.fillStyle = '#F0B24A';
-      c.fillText('WHAT THE DETECTOR GETS', x0, mid+112);
-
-      // brightness meter
-      c.fillStyle = '#171B25'; c.fillRect(x0, 252, 390, 20);
+      c.fillStyle = '#171B25'; c.fillRect(x0, 266, x1-x0, 12);
       c.fillStyle = I < 0.06 ? '#E8674F' : '#F0B24A';
-      c.fillRect(x0, 252, 390*I, 20);
-      c.fillStyle = '#E6E9F0'; c.font = "14px 'IBM Plex Mono',monospace";
-      c.fillText('reflected brightness ' + Math.round(I*100) + '%', x0, 292);
-      if (I < 0.06){
-        c.fillStyle = '#E8674F';
-        c.fillText('CANCELLED \u2014 this is a pit', x0 + 250, 292);
-      }
+      c.fillRect(x0, 266, (x1-x0)*I, 12);
+      fset(c, 11, I < 0.06 ? '#E8674F' : '#E6E9F0');
+      c.fillText(I < 0.06 ? 'CANCELLED - this is a pit'
+                          : 'reflected brightness ' + Math.round(I*100) + '%', x0, 292);
     }, function(v){ return (v/1000).toFixed(3) + ' \u00B5m'; });
   };
 
-  // surface defect against the beam cross-section
+  // a surface defect against the beam it has to block
   FIGS.focus = function(host, cap){
     figCanvas(host, cap, 'Scratch width', 0, 800, 120, 10, function(c, wUm){
-      var W = 840, H = 300;
-      c.fillStyle = '#0B0E15'; c.fillRect(0,0,W,H);
-      var surfY = 52, dataY = 244, cx = 250;
-      var halfTop = 108;                 // 0.8 mm beam, drawn half-width
+      var surfY = 46, dataY = 214, cx = 108, halfTop = 62;
+      c.fillStyle = 'rgba(23,27,37,0.9)'; c.fillRect(14, surfY, 188, dataY-surfY);
+      c.strokeStyle = '#242A36'; c.lineWidth = 1; c.strokeRect(14, surfY, 188, dataY-surfY);
+      fset(c, 9, '#5A6170'); c.fillText('1.2 mm OF CLEAR PLASTIC', 22, (surfY+dataY)/2);
 
-      // polycarbonate slab
-      c.fillStyle = 'rgba(23,27,37,0.85)';
-      c.fillRect(30, surfY, 440, dataY-surfY);
-      c.strokeStyle = '#242A36'; c.lineWidth = 1;
-      c.strokeRect(30, surfY, 440, dataY-surfY);
-      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
-      c.fillText('1.2 mm POLYCARBONATE', 44, (surfY+dataY)/2);
-
-      // converging cone
       c.fillStyle = 'rgba(34,168,214,0.20)';
       c.beginPath();
       c.moveTo(cx-halfTop, surfY); c.lineTo(cx+halfTop, surfY);
-      c.lineTo(cx+3, dataY); c.lineTo(cx-3, dataY);
-      c.closePath(); c.fill();
+      c.lineTo(cx+2, dataY); c.lineTo(cx-2, dataY); c.closePath(); c.fill();
       c.strokeStyle = '#22A8D6'; c.lineWidth = 1.5;
-      c.beginPath(); c.moveTo(cx-halfTop, surfY); c.lineTo(cx-3, dataY);
-      c.moveTo(cx+halfTop, surfY); c.lineTo(cx+3, dataY); c.stroke();
+      c.beginPath(); c.moveTo(cx-halfTop, surfY); c.lineTo(cx-2, dataY);
+      c.moveTo(cx+halfTop, surfY); c.lineTo(cx+2, dataY); c.stroke();
 
-      // data layer + label side
       c.strokeStyle = '#E0A94A'; c.lineWidth = 3;
-      c.beginPath(); c.moveTo(30, dataY); c.lineTo(470, dataY); c.stroke();
-      c.fillStyle = '#E0A94A'; c.font = "12px 'IBM Plex Mono',monospace";
-      c.fillText('DATA LAYER + FOIL \u2014 the label side', 30, dataY+22);
-      c.fillStyle = '#5A6170';
-      c.fillText('1.7 \u00B5m spot', cx+14, dataY-10);
-      c.fillText('0.8 mm at the surface', cx-halfTop, surfY-14);
+      c.beginPath(); c.moveTo(14, dataY); c.lineTo(202, dataY); c.stroke();
+      fset(c, 9, '#E0A94A'); c.fillText('DATA LAYER - the label side', 14, dataY+16);
+      fset(c, 9, '#5A6170');
+      c.fillText('0.8 mm wide here', cx-halfTop, surfY-10);
+      c.fillText('1.7 \u00B5m spot', cx+8, dataY-8);
 
-      // the scratch, to scale against the 0.8 mm entry footprint
       var halfPx = Math.min(halfTop, (wUm/800)*halfTop);
-      if (wUm > 0){
-        c.fillStyle = '#E8674F';
-        c.fillRect(cx-halfPx, surfY-7, halfPx*2, 9);
-      }
+      if (wUm > 0){ c.fillStyle = '#E8674F'; c.fillRect(cx-halfPx, surfY-6, halfPx*2, 8); }
 
-      // blocked fraction: a central strip across a circular beam
       var R = 400, a = Math.min(R, wUm/2);
-      var blocked = a <= 0 ? 0 :
-        (2*(a*Math.sqrt(R*R-a*a) + R*R*Math.asin(a/R))) / (Math.PI*R*R);
+      var blocked = a <= 0 ? 0 : (2*(a*Math.sqrt(R*R-a*a) + R*R*Math.asin(a/R)))/(Math.PI*R*R);
 
-      // beam cross-section, seen end-on
-      var bx = 640, by = 130, br = 76;
-      c.strokeStyle = '#242A36'; c.lineWidth = 1;
-      c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.stroke();
+      var bx = 305, by = 118, br = 62;
       c.fillStyle = 'rgba(34,168,214,0.22)';
-      c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.fill();
+      c.beginPath(); c.arc(bx, by, br, 0, TAU); c.fill();
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.beginPath(); c.arc(bx, by, br, 0, TAU); c.stroke();
       if (a > 0){
         var ap = (a/R)*br;
-        c.save();
-        c.beginPath(); c.arc(bx, by, br, 0, Math.PI*2); c.clip();
-        c.fillStyle = 'rgba(232,103,79,0.75)';
-        c.fillRect(bx-ap, by-br, ap*2, br*2);
-        c.restore();
+        c.save(); c.beginPath(); c.arc(bx, by, br, 0, TAU); c.clip();
+        c.fillStyle = 'rgba(232,103,79,0.75)'; c.fillRect(bx-ap, by-br, ap*2, br*2); c.restore();
       }
-      c.fillStyle = '#5A6170'; c.font = "12px 'IBM Plex Mono',monospace";
-      c.fillText('BEAM AT THE SURFACE', bx-br, by-br-14);
-      c.fillStyle = '#E6E9F0'; c.font = "15px 'IBM Plex Mono',monospace";
-      c.fillText(Math.round(blocked*100) + '% of the beam blocked', bx-br-20, by+br+34);
-      c.font = "12px 'IBM Plex Mono',monospace";
-      c.fillStyle = blocked > 0.5 ? '#E8674F' : '#F0B24A';
-      c.fillText(blocked > 0.5 ? 'beyond what CIRC can conceal'
-                               : 'CIRC corrects this without a click', bx-br-20, by+br+56);
+      fset(c, 9, '#5A6170'); c.fillText('THE BEAM, END ON', bx-br, by-br-10);
+      fset(c, 15, '#E6E9F0'); c.fillText(Math.round(blocked*100) + '% blocked', bx-br, by+br+24);
+      fset(c, 10, blocked > 0.5 ? '#E8674F' : '#F0B24A');
+      c.fillText(blocked > 0.5 ? 'beyond what CIRC hides' : 'CIRC hides this entirely', bx-br, by+br+42);
+      fset(c, 9.5, '#8B93A3');
+      c.fillText('A scratch on the clear side is far out of focus.', 14, 258);
+      c.fillText('One on the label side goes straight through the foil.', 14, 274);
     }, function(v){ return v === 0 ? 'none' : (v/1000).toFixed(2) + ' mm'; });
   };
 
-
-  // drag the head across the program area and watch rotation chase the constant
+  // rotation chasing a constant
   FIGS.clv = function(host, cap){
     figCanvas(host, cap, 'Head radius', 25, 57.8, 26, 0.1, function(c, r){
-      var W=840, H=300;
-      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
-      var rpm = 1200/(TAU*r)*60;
-
-      // the disc, seen face on
-      var cx=140, cy=150, R=112, R0v=25, R1v=57.8;
-      c.strokeStyle='#242A36'; c.lineWidth=1;
+      var rpm = 1200/(TAU*r)*60, R0v = 25, R1v = 57.8;
+      var cx = 78, cy = 108, R = 66;
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
       c.beginPath(); c.arc(cx,cy,R,0,TAU); c.stroke();
-      c.beginPath(); c.arc(cx,cy,R*0.10,0,TAU); c.stroke();
-      var rr = R*0.10 + (R-R*0.10)*((r-R0v)/(R1v-R0v));
-      c.strokeStyle='rgba(224,169,74,.35)'; c.lineWidth=1;
+      c.beginPath(); c.arc(cx,cy,R*0.12,0,TAU); c.stroke();
+      var rr = R*0.12 + (R-R*0.12)*((r-R0v)/(R1v-R0v));
+      c.strokeStyle = 'rgba(224,169,74,.35)';
       c.beginPath(); c.arc(cx,cy,rr,0,TAU); c.stroke();
-      c.fillStyle='#FFFFFF';
-      c.beginPath(); c.arc(cx, cy-rr, 5, 0, TAU); c.fill();
-      c.fillStyle='#5A6170'; c.font="12px 'IBM Plex Mono',monospace";
-      c.fillText('25 mm', cx-24, cy+R*0.10+16);
-      c.fillText('57.8 mm', cx-30, cy+R+18);
+      c.fillStyle = '#FFFFFF';
+      c.beginPath(); c.arc(cx, cy-rr, 4.5, 0, TAU); c.fill();
+      fset(c, 9, '#5A6170');
+      c.fillText('25 mm', cx-16, cy+R*0.12+12);
+      c.fillText('57.8 mm', cx-20, cy+R+14);
 
-      // what stays fixed and what gives
-      var x=300;
-      c.fillStyle='#5A6170'; c.fillText('PIT SPEED PAST THE LENS', x, 44);
-      c.fillStyle='#171B25'; c.fillRect(x, 54, 480, 22);
-      c.fillStyle='rgba(224,169,74,.55)'; c.fillRect(x, 54, 480, 22);
-      c.fillStyle='#E0A94A'; c.font="16px 'IBM Plex Mono',monospace";
-      c.fillText('1.20 m/s  -  never changes', x+12, 70);
+      var x = 164;
+      fset(c, 9, '#5A6170'); c.fillText('PIT SPEED PAST THE LENS', x, 30);
+      c.fillStyle = 'rgba(224,169,74,.5)'; c.fillRect(x, 38, 222, 18);
+      fset(c, 12, '#E0A94A'); c.fillText('1.20 m/s  never varies', x+8, 51);
 
-      c.fillStyle='#5A6170'; c.font="12px 'IBM Plex Mono',monospace";
-      c.fillText('SO ROTATION HAS TO GIVE', x, 116);
-      c.fillStyle='#171B25'; c.fillRect(x, 126, 480, 22);
-      var frac = (rpm-198)/(458-198);
-      c.fillStyle='#22A8D6'; c.fillRect(x, 126, 480*Math.max(0.02,frac), 22);
-      c.fillStyle='#E6E9F0'; c.font="20px 'IBM Plex Mono',monospace";
-      c.fillText(Math.round(rpm)+' rpm', x, 176);
-      c.fillStyle='#8B93A3'; c.font="12px 'IBM Plex Mono',monospace";
-      c.fillText('at '+r.toFixed(1)+' mm', x+130, 176);
+      fset(c, 9, '#5A6170'); c.fillText('SO ROTATION HAS TO GIVE', x, 84);
+      c.fillStyle = '#171B25'; c.fillRect(x, 92, 222, 18);
+      c.fillStyle = '#22A8D6';
+      c.fillRect(x, 92, 222*Math.max(0.03, (rpm-198)/(458-198)), 18);
+      fset(c, 20, '#E6E9F0'); c.fillText(Math.round(rpm) + ' rpm', x, 136);
+      fset(c, 10, '#8B93A3'); c.fillText('at ' + r.toFixed(1) + ' mm', x+104, 136);
 
-      // vinyl, for contrast
-      c.strokeStyle='#242A36'; c.beginPath(); c.moveTo(x,200); c.lineTo(780,200); c.stroke();
-      c.fillStyle='#5A6170';
-      c.fillText('VINYL HOLDS 33 1/3 rpm INSTEAD, SO ITS GROOVE SPEED FALLS:', x, 224);
-      c.fillStyle='#8B93A3'; c.font="13px 'IBM Plex Mono',monospace";
-      c.fillText('509 mm/s at the rim  ->  209 mm/s at the label', x, 250);
-      c.fillStyle='#E8674F';
-      c.fillText('2.4x less groove per second by the last track. A CD never pays this.', x, 274);
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(14, 200); c.lineTo(386, 200); c.stroke();
+      fset(c, 9.5, '#5A6170'); c.fillText('VINYL HOLDS 33 1/3 rpm INSTEAD:', 14, 224);
+      fset(c, 11, '#8B93A3'); c.fillText('509 mm/s at the rim  ->  209 mm/s at the label', 14, 246);
+      fset(c, 10, '#E8674F'); c.fillText('2.4x less groove per second by the last track.', 14, 268);
+      fset(c, 10, '#5A6170'); c.fillText('A CD never pays this.', 14, 286);
     }, function(v){ return v.toFixed(1) + ' mm'; });
   };
 
-  // sampling and the fold-back above Nyquist
+  // sampling, and what folds back
   FIGS.sampling = function(host, cap){
-    var FS = 44.1;                       // kHz
+    var FS = 44.1;
     figCanvas(host, cap, 'Tone frequency', 1, 40, 18, 0.1, function(c, f){
-      var W=840, H=300, T=0.6;           // 0.6 ms of time on screen
-      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
-      var x0=30, x1=810, mid=150, A=88;
-      var nyq = FS/2, over = f > nyq;
-      var alias = over ? FS - f : f;
+      var T = 0.6, x0 = 14, x1 = 386, mid = 132, A = 74;
+      var over = f > FS/2, alias = over ? FS - f : f;
+      c.strokeStyle = '#242A36'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(x0, mid); c.lineTo(x1, mid); c.stroke();
 
-      c.strokeStyle='#242A36'; c.lineWidth=1;
-      c.beginPath(); c.moveTo(x0,mid); c.lineTo(x1,mid); c.stroke();
-
-      // the actual tone
-      c.strokeStyle='rgba(139,147,163,.55)'; c.lineWidth=1.5;
+      c.strokeStyle = 'rgba(139,147,163,.5)'; c.lineWidth = 1.2;
       c.beginPath();
-      for (var px=x0; px<=x1; px++){
-        var t=(px-x0)/(x1-x0)*T;
-        var y=mid-Math.sin(TAU*f*t)*A;
-        if(px===x0) c.moveTo(px,y); else c.lineTo(px,y);
+      for (var px = x0; px <= x1; px++){
+        var t = (px-x0)/(x1-x0)*T, y = mid - Math.sin(TAU*f*t)*A;
+        if (px === x0) c.moveTo(px,y); else c.lineTo(px,y);
       }
       c.stroke();
 
-      // what a CD keeps: 44,100 instants per second
-      var n=0, tt;
-      c.fillStyle='#E0A94A';
+      var n = 0, tt;
       while ((tt = n/FS) <= T){
-        var sx = x0 + (tt/T)*(x1-x0);
-        var sy = mid - Math.sin(TAU*f*tt)*A;
-        c.beginPath(); c.arc(sx, sy, 4, 0, TAU); c.fill();
-        c.strokeStyle='rgba(224,169,74,.30)';
-        c.beginPath(); c.moveTo(sx,mid); c.lineTo(sx,sy); c.stroke();
+        var sx = x0 + (tt/T)*(x1-x0), sy = mid - Math.sin(TAU*f*tt)*A;
+        c.strokeStyle = 'rgba(224,169,74,.28)'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(sx, mid); c.lineTo(sx, sy); c.stroke();
+        c.fillStyle = '#E0A94A';
+        c.beginPath(); c.arc(sx, sy, 2.8, 0, TAU); c.fill();
         n++;
       }
 
-      // what comes back out of the filter
-      c.strokeStyle = over ? '#E8674F' : '#22A8D6';
-      c.lineWidth=2.5;
+      c.strokeStyle = over ? '#E8674F' : '#22A8D6'; c.lineWidth = 2.4;
       c.beginPath();
-      for (var px2=x0; px2<=x1; px2++){
-        var t2=(px2-x0)/(x1-x0)*T;
+      for (var p2 = x0; p2 <= x1; p2++){
+        var t2 = (p2-x0)/(x1-x0)*T;
         var v = over ? -Math.sin(TAU*alias*t2) : Math.sin(TAU*f*t2);
-        var y2=mid-v*A;
-        if(px2===x0) c.moveTo(px2,y2); else c.lineTo(px2,y2);
+        var y2 = mid - v*A;
+        if (p2 === x0) c.moveTo(p2,y2); else c.lineTo(p2,y2);
       }
       c.stroke();
 
-      c.font="12px 'IBM Plex Mono',monospace";
-      c.fillStyle='#8B93A3'; c.fillText('THE TONE', x0, 28);
-      c.fillStyle='#E0A94A'; c.fillText('44,100 SAMPLES / SECOND', x0+120, 28);
-      c.fillStyle = over ? '#E8674F' : '#22A8D6';
-      c.fillText('WHAT COMES BACK', x0+400, 28);
+      fset(c, 9, '#8B93A3'); c.fillText('THE TONE', x0, 18);
+      fset(c, 9, '#E0A94A'); c.fillText('44,100 SAMPLES / SECOND', x0+78, 18);
+      fset(c, 9, over ? '#E8674F' : '#22A8D6'); c.fillText('WHAT COMES BACK', x0+248, 18);
 
-      c.font="17px 'IBM Plex Mono',monospace";
-      if (over){
-        c.fillStyle='#E8674F';
-        c.fillText(f.toFixed(1)+' kHz comes back as '+alias.toFixed(1)+' kHz', x0, 278);
-        c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
-        c.fillText('Above 22.05 kHz the samples fit a lower tone just as well.', x0, 296);
-      } else {
-        c.fillStyle='#22A8D6';
-        c.fillText(f.toFixed(1)+' kHz survives exactly', x0, 278);
-        c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
-        c.fillText('Below 22.05 kHz exactly one waveform fits these samples. Push past it and see.', x0, 296);
-      }
+      fset(c, 14, over ? '#E8674F' : '#22A8D6');
+      c.fillText(over ? f.toFixed(1) + ' kHz comes back as ' + alias.toFixed(1) + ' kHz'
+                      : f.toFixed(1) + ' kHz survives exactly', x0, 252);
+      fset(c, 9.5, '#8B93A3');
+      c.fillText(over ? 'Past 22.05 kHz the samples fit a lower tone just as well.'
+                      : 'Below 22.05 kHz exactly one waveform fits these samples.', x0, 272);
+      c.fillText(over ? 'A CD filters this out before it ever samples.'
+                      : 'Push the slider past 22.05 and watch it fold.', x0, 288);
     }, function(v){ return v.toFixed(1) + ' kHz'; });
   };
 
-  // how long a gouge can be before you hear it
+  // how long a gouge can get before you hear it
   FIGS.circ = function(host, cap){
-    var MM_PER_CHANNEL_BIT = 1200 / 4321800;      // 0.2777 um
-    var CORRECT = 2.4, CONCEAL = 8.0;             // mm of track
-    figCanvas(host, cap, 'Damage along track', 0, 14, 2.0, 0.1, function(c, mm){
-      var W=840, H=300;
-      c.fillStyle='#0B0E15'; c.fillRect(0,0,W,H);
-      var x0=30, x1=810, span=14;
-      var chBits = mm/MM_PER_CHANNEL_BIT, dataBits = chBits*8/17;
+    var MM_PER_BIT = 1200/4321800, CORRECT = 2.4, CONCEAL = 8.0, SPAN = 14;
+    figCanvas(host, cap, 'Damage along track', 0, SPAN, 2.0, 0.1, function(c, mm){
+      var x0 = 14, x1 = 386, w = x1-x0;
+      var chBits = mm/MM_PER_BIT, dataBits = chBits*8/17;
+      fset(c, 9, '#5A6170'); c.fillText('ONE STRETCH OF TRACK', x0, 22);
+      c.fillStyle = '#171B25'; c.fillRect(x0, 30, w, 24);
+      c.fillStyle = '#E8674F'; c.fillRect(x0, 30, (mm/SPAN)*w, 24);
 
-      c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#5A6170';
-      c.fillText('ONE STRETCH OF TRACK', x0, 30);
-      c.fillStyle='#171B25'; c.fillRect(x0, 40, x1-x0, 30);
-      var wpx = (mm/span)*(x1-x0);
-      c.fillStyle='#E8674F'; c.fillRect(x0, 40, wpx, 30);
-
-      // the three regimes, drawn to the same scale
-      [[0,CORRECT,'#22A8D6','CORRECTED'],[CORRECT,CONCEAL,'#E0A94A','CONCEALED'],[CONCEAL,span,'#E8674F','AUDIBLE']].forEach(function(z){
-        var a=x0+(z[0]/span)*(x1-x0), b=x0+(z[1]/span)*(x1-x0);
-        c.fillStyle=z[2]; c.globalAlpha=.22; c.fillRect(a, 84, b-a, 16); c.globalAlpha=1;
-        c.fillStyle=z[2]; c.font="11px 'IBM Plex Mono',monospace";
-        c.fillText(z[3], a+6, 96);
+      [[0,CORRECT,'#22A8D6','CORRECTED'],[CORRECT,CONCEAL,'#E0A94A','CONCEALED'],[CONCEAL,SPAN,'#E8674F','AUDIBLE']]
+      .forEach(function(z){
+        var a = x0+(z[0]/SPAN)*w, b = x0+(z[1]/SPAN)*w;
+        c.globalAlpha = .22; c.fillStyle = z[2]; c.fillRect(a, 62, b-a, 14); c.globalAlpha = 1;
+        fset(c, 8.5, z[2]); c.fillText(z[3], a+4, 72);
       });
-      c.strokeStyle='#E6E9F0'; c.lineWidth=2;
-      c.beginPath(); c.moveTo(x0+wpx, 78); c.lineTo(x0+wpx, 106); c.stroke();
+      c.strokeStyle = '#E6E9F0'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(x0+(mm/SPAN)*w, 58); c.lineTo(x0+(mm/SPAN)*w, 80); c.stroke();
 
-      c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
-      c.fillText(Math.round(chBits).toLocaleString()+' channel bits', x0, 140);
-      c.fillText('= '+Math.round(dataBits).toLocaleString()+' bits of audio  (17 on the disc per 8 of music)', x0, 158);
+      fset(c, 10, '#8B93A3');
+      c.fillText(Math.round(chBits).toLocaleString() + ' channel bits', x0, 106);
+      c.fillText('= ' + Math.round(dataBits).toLocaleString() + ' bits of audio', x0, 124);
+      fset(c, 9, '#5A6170'); c.fillText('(17 cut into the disc per 8 of music)', x0, 140);
 
-      var verdict, sub, col;
-      if (mm <= CORRECT){
-        col='#22A8D6'; verdict='Corrected outright. Bit perfect.';
-        sub='Deinterleaving scatters this into isolated errors and Reed-Solomon rebuilds every one.';
-      } else if (mm <= CONCEAL){
-        col='#E0A94A'; verdict='Concealed by interpolation.';
-        sub='Too much to rebuild, so lost samples are drawn from their surviving neighbors. Rarely audible.';
-      } else {
-        col='#E8674F'; verdict='Beyond concealment. You hear it.';
-        sub='Not enough intact neighbors left to interpolate from. The player mutes rather than click.';
-      }
-      c.fillStyle=col; c.font="18px 'IBM Plex Mono',monospace";
-      c.fillText(verdict, x0, 208);
-      c.fillStyle='#8B93A3'; c.font="12px 'IBM Plex Mono',monospace";
-      c.fillText(sub, x0, 232);
-      c.fillStyle='#5A6170';
-      c.fillText('Interleaving is the whole trick: damage is contiguous on the disc,', x0, 262);
-      c.fillText('but scattered by the time the decoder sees it.', x0, 280);
+      var col, verdict, sub;
+      if (mm <= CORRECT){ col='#22A8D6'; verdict='Corrected outright. Bit perfect.';
+        sub=['Deinterleaving scatters this into isolated','errors and Reed-Solomon rebuilds every one.']; }
+      else if (mm <= CONCEAL){ col='#E0A94A'; verdict='Concealed by interpolation.';
+        sub=['Too much to rebuild, so lost samples are drawn','from surviving neighbors. Rarely audible.']; }
+      else { col='#E8674F'; verdict='Beyond concealment. You hear it.';
+        sub=['Not enough intact neighbors left to interpolate','from. The player mutes rather than click.']; }
+      fset(c, 13, col); c.fillText(verdict, x0, 178);
+      fset(c, 9.5, '#8B93A3'); c.fillText(sub[0], x0, 198); c.fillText(sub[1], x0, 214);
+      fset(c, 9.5, '#5A6170');
+      c.fillText('Interleaving is the whole trick: damage is', x0, 248);
+      c.fillText('contiguous on the disc, but scattered by the', x0, 264);
+      c.fillText('time the decoder sees it.', x0, 280);
     }, function(v){ return v.toFixed(1) + ' mm'; });
   };
 
@@ -1032,8 +1019,22 @@
     if (i === noteAt) return;
     noteAt = i;
     var n = NOTES[i];
+    el.nFig.innerHTML = '';
     if (n.fn && FIGS[n.fn]) FIGS[n.fn](el.nFig, n.cap);
-    else el.nFig.innerHTML = (n.d || '') + '<div class="fig-cap">' + (n.cap || '') + '</div>';
+    else {
+      var sc = document.createElement('div');
+      sc.className = 'figscroll';
+      sc.innerHTML = n.d || '';
+      el.nFig.appendChild(sc);
+      var cp = document.createElement('div');
+      cp.className = 'fig-cap'; cp.textContent = n.cap || '';
+      el.nFig.appendChild(cp);
+    }
+    if (matchMedia('(max-width:900px)').matches){
+      var sw = document.createElement('div');
+      sw.className = 'swipe'; sw.textContent = 'swipe the diagram \u2192';
+      el.nFig.appendChild(sw);
+    }
     el.nNum.textContent = pad(i+1);
     el.nOf.textContent = 'of ' + NOTES.length;
     el.nAt.textContent = data ? msf(n.at * data.duration).slice(0,5) : '--:--';
