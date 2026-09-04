@@ -22,7 +22,8 @@ Almost every CD diagram on the internet is schematic. This one is measured.
 
 Radius follows the real area rule. At constant linear velocity the groove sweeps equal
 area per second, so radius grows with the **square root** of elapsed pit-track length,
-not linearly with time:
+not linearly with time. The page shows this equation on screen and re-evaluates it as
+the read head moves, so you can watch the substitution happen:
 
 ```
 r(t) = sqrt(r0² + v·t·p/π)        r0 = 25 mm, v = 1.2 m/s, p = 1.6 µm

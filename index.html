@@ -104,6 +104,14 @@
   .tno{display:inline-block;text-align:center;border-radius:2px;background:var(--panel-2);color:var(--ink-faint);font-size:10px;padding:1px 0}
   .tdur{color:var(--ink-faint);font-size:11px}
 
+.eq{font-family:var(--mono);font-size:15px;color:var(--ink);line-height:2.1;white-space:nowrap;
+    overflow-x:auto;scrollbar-width:none;padding:2px 0}
+  .eq::-webkit-scrollbar{display:none}
+  .eq-sub{font-size:12.5px;color:var(--ink-dim);line-height:2.3}
+  .eq b{color:var(--brass);font-weight:500}
+  .eq .rad{border-top:1px solid currentColor;padding:3px 5px 0;margin-left:-1px}
+  .eq .res{color:var(--brass);font-size:15px;text-shadow:0 0 14px rgba(224,169,74,.5)}
+  .sym{color:var(--brass)}
   .ramp{height:9px;border-radius:2px;margin-bottom:6px}
   .ramp-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
   .note{margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-dim);max-width:60ch}
@@ -347,6 +355,19 @@
       </section>
 
       <section class="block">
+        <h2>The one equation <span>live</span></h2>
+        <div class="eq" id="eqSym"></div>
+        <div class="eq eq-sub" id="eqNum"></div>
+        <dl class="readout" style="margin-top:8px">
+          <div class="row"><dt><span class="sym">r&#8320;</span> inner radius</dt><dd>25.00 mm</dd></div>
+          <div class="row"><dt><span class="sym">v</span> scan speed</dt><dd>1,200 mm/s</dd></div>
+          <div class="row"><dt><span class="sym">p</span> track pitch</dt><dd>0.0016 mm</dd></div>
+          <div class="row"><dt><span class="sym">t</span> elapsed</dt><dd id="eqT">0.00 s</dd></div>
+        </dl>
+        <p class="note">At constant linear velocity the groove covers equal <b>area</b> every second, so radius grows with the <b>square root</b> of elapsed track length &mdash; fast near the hub, slower at the rim. Revolutions, rpm, and where the coil stops all fall out of this one line.</p>
+      </section>
+
+      <section class="block">
         <h2>Index points <span id="tocCount"></span></h2>
         <div class="toc" id="toc"></div>
       </section>
@@ -458,7 +479,7 @@
   var el = {};
   ['rFile','rArtist','rAlbum','rowArtist','rowAlbum','rFmt','rSrc','rowSrc','rLen','rPeak','rPos','rRev','rRad','rRpm','rLevel',
    'rProg','rRevs','rBand','rPit','discShare','cPos','cLen','tocCount','stageNote',
-   'zVal','pVal','pipSpan','rateNote','hMod','hVin','hLou','vModPk','vVinPk','vLouPk','vModRms','vVinRms','vLouRms','vModCr','vVinCr','vLouCr','nNum','nOf','nAt','nTitle','nText','nDots','nFig'].forEach(function(id){ el[id] = document.getElementById(id); });
+   'zVal','pVal','pipSpan','rateNote','eqSym','eqNum','eqT','hMod','hVin','hLou','vModPk','vVinPk','vLouPk','vModRms','vVinRms','vLouRms','vModCr','vVinCr','vLouCr','nNum','nOf','nAt','nTitle','nText','nDots','nFig'].forEach(function(id){ el[id] = document.getElementById(id); });
 
   // ---------- state ----------
   var actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1712,6 +1733,9 @@
     el.cPos.textContent = msf(p);
     el.rRev.textContent = commas(revsAt(p)) + ' / ' + commas(FULL_REVS);
     el.rRad.textContent = radiusAt(p).toFixed(2) + ' mm';
+    el.eqT.textContent = p.toFixed(2) + ' s';
+    el.eqNum.innerHTML = '= &radic;<span class="rad">25&sup2; + 1200&middot;' + p.toFixed(1) +
+      '&middot;0.0016 / &pi;</span> = <span class="res">' + radiusAt(p).toFixed(2) + ' mm</span>';
     el.rRpm.textContent = Math.round(CLV / (TAU * radiusAt(p)) * 60) + ' rpm';
     var bi = Math.min(BUCKETS-1, Math.floor(t*BUCKETS));
     el.rLevel.textContent = dbfs(data.rms[bi]);
@@ -1845,6 +1869,9 @@
     el.rateNote.innerHTML = 'A CD is <b>44,100 Hz</b> by definition, so everything here is analyzed at that rate. ' +
       (m.source ? 'This master was delivered at 48 kHz, and pressing it to a disc means resampling &mdash; which is exactly what happened on the way into this page. ' : '') +
       'Your browser then plays it back through a ' + (actx.sampleRate/1000).toFixed(1) + ' kHz output.';
+    el.eqSym.innerHTML = '<span class="sym">r</span>(<span class="sym">t</span>) = &radic;' +
+      '<span class="rad"><span class="sym">r&#8320;</span>&sup2; + ' +
+      '<span class="sym">v</span>&middot;<span class="sym">t</span>&middot;<span class="sym">p</span> / &pi;</span>';
     curIdx = -1; noteAt = -1;
     buildDots(); noteAt = -1; showNote(0);
     renderToc();
