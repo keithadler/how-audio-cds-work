@@ -955,12 +955,12 @@
         c.fillStyle='#E8674F';
         c.fillText(f.toFixed(1)+' kHz comes back as '+alias.toFixed(1)+' kHz', x0, 278);
         c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
-        c.fillText('Above 22.05 kHz the samples fit a lower tone just as well. A CD player', x0, 296);
+        c.fillText('Above 22.05 kHz the samples fit a lower tone just as well.', x0, 296);
       } else {
         c.fillStyle='#22A8D6';
         c.fillText(f.toFixed(1)+' kHz survives exactly', x0, 278);
         c.font="12px 'IBM Plex Mono',monospace"; c.fillStyle='#8B93A3';
-        c.fillText('Below 22.05 kHz only one waveform fits these samples. Push past it and see.', x0, 296);
+        c.fillText('Below 22.05 kHz exactly one waveform fits these samples. Push past it and see.', x0, 296);
       }
     }, function(v){ return v.toFixed(1) + ' kHz'; });
   };
