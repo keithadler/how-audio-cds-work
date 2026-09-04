@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
@@ -18,12 +19,13 @@
   @keyframes sheenspin{ to{ transform:rotate(360deg) } }
   @keyframes pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
   *{box-sizing:border-box}
-  html,body{overflow-x:hidden;overscroll-behavior-y:none}
   body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
   .app{max-width:1200px;margin:0 auto;padding:18px 24px 34px;display:flex;flex-direction:column;gap:14px}
 
-  .masthead{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px 20px;flex-wrap:wrap;
-    margin:0 -24px;padding:9px 24px;background:var(--ground);border-bottom:1px solid var(--rule)}
+  .topbar{position:sticky;top:0;z-index:20;margin:0 -24px;padding:0 24px 7px;background:var(--ground);
+    border-bottom:1px solid var(--rule);box-shadow:0 12px 26px -18px rgba(10,12,17,.95)}
+  .masthead{display:flex;align-items:center;gap:8px 20px;flex-wrap:wrap;padding:9px 0 8px}
+  .player{display:flex;align-items:center;gap:12px}
   .wordmark{display:flex;align-items:baseline;gap:12px;min-width:0;margin-right:2px}
   .wordmark h1{font-family:var(--display);font-weight:700;font-size:22px;line-height:1;letter-spacing:.05em;text-transform:uppercase;margin:0;white-space:nowrap}
   .wordmark h1 em{font-style:normal;color:var(--brass);text-shadow:0 0 18px rgba(224,169,74,.55)}
@@ -34,7 +36,7 @@
   button{font:inherit;cursor:pointer}
   .btn{background:var(--panel-2);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:7px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
   .btn:hover{border-color:var(--brass-dim);color:var(--brass)}
-  .btn-primary{background:var(--brass);border-color:var(--brass);color:#150F03;font-weight:500;min-width:104px;box-shadow:0 0 22px -4px rgba(224,169,74,.65),inset 0 1px 0 rgba(255,255,255,.28)}
+  .btn-primary{background:var(--brass);border-color:var(--brass);color:#150F03;font-weight:500;min-width:88px;box-shadow:0 0 22px -4px rgba(224,169,74,.65),inset 0 1px 0 rgba(255,255,255,.28)}
   .btn-primary:hover{background:#EFBB5E;border-color:#EFBB5E;color:#150F03;box-shadow:0 0 30px -2px rgba(224,169,74,.9),inset 0 1px 0 rgba(255,255,255,.35)}
   :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 
@@ -107,12 +109,12 @@
   .note{margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-dim);max-width:60ch}
   .note b{color:var(--ink);font-weight:500}
 
-  .transport{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:12px 16px 11px;display:flex;flex-direction:column;gap:10px;position:sticky;bottom:0;z-index:5;box-shadow:0 -10px 24px rgba(10,12,17,.7)}
-  .transport-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .clock{font-family:var(--mono);font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .clock span{color:var(--ink-faint);font-size:14px}
-  .transport-meta{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
-  .strip{position:relative;height:74px;background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:3px;overflow:hidden;box-shadow:inset 0 0 28px -10px rgba(34,168,214,.5)}
+  .transport{display:flex;flex-direction:column;gap:5px}
+  
+  .clock{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+  .clock span{color:var(--ink-faint);font-size:12px}
+  
+  .strip{position:relative;height:58px;background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:3px;overflow:hidden;box-shadow:inset 0 0 28px -10px rgba(34,168,214,.5)}
   .strip canvas{display:block;width:100%;height:100%;cursor:pointer}
   .strip-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
 
@@ -157,8 +159,12 @@
 
   @media (max-width:900px){
     .app{padding:0 12px 24px;gap:12px}
-    .masthead{position:sticky;top:0;margin:0 -12px;padding:8px 12px 7px;gap:8px 12px;
-      background:rgba(10,12,17,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .topbar{margin:0 -12px;padding:0 12px 5px;background:rgba(10,12,17,.97);
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .masthead{gap:8px 12px;padding:7px 0 6px}
+    .player{order:1;margin-left:auto}
+    .clock{font-size:13px}
+    #transportMeta{display:none}
     .wordmark{order:0}
     .wordmark h1{font-size:19px}
     .masthead-actions{order:1}
@@ -190,10 +196,7 @@
     .figscroll > svg,.figscroll > canvas{min-width:400px}
     .swipe{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
       color:var(--ink-faint);text-align:right;margin-top:5px}
-    .transport{padding:10px 12px 9px;margin:0 -12px;border-radius:0;border-left:0;border-right:0}
-    .clock{font-size:16px}
-    .transport-meta{display:none}
-    .strip{height:56px}
+    .strip{height:46px}
     .quiz{padding:13px 14px 6px}
     .qlist{grid-template-columns:minmax(0,1fr)}
     .colophon{font-size:9px;line-height:1.7}
@@ -214,10 +217,15 @@
 </style>
 
 <div class="app">
+  <div class="topbar">
   <header class="masthead">
     <div class="wordmark">
       <h1>How Audio <em>CDs</em> Work</h1>
       <p>Actual size</p>
+    </div>
+    <div class="player">
+      <button class="btn btn-primary" id="playBtn">Play</button>
+      <div class="clock"><span id="cPos">00:00:00</span> <span>/</span> <span id="cLen">00:00:00</span></div>
     </div>
     <div class="controls">
     <div class="tgroup">
@@ -249,6 +257,12 @@
       <button class="btn" id="loadBtn">Open file</button>
     </div>
   </header>
+
+  <div class="transport">
+    <div class="strip" id="strip"><canvas id="linear"></canvas></div>
+    <div class="strip-labels"><span>Start of track</span><span id="transportMeta">MM:SS:FF &middot; 75 frames per second</span><span>End</span></div>
+  </div>
+  </div>
 
   <div class="notes">
     <div>
@@ -352,15 +366,6 @@
     <div class="qlist" id="qlist"></div>
   </section>
 
-  <div class="transport">
-    <div class="transport-head">
-      <button class="btn btn-primary" id="playBtn">Play</button>
-      <div class="clock"><span id="cPos">00:00:00</span> <span>/</span> <span id="cLen">00:00:00</span></div>
-      <div class="transport-meta">MM:SS:FF &middot; 75 frames per second</div>
-    </div>
-    <div class="strip" id="strip"><canvas id="linear"></canvas></div>
-    <div class="strip-labels"><span>Start of track</span><span>Unrolled spiral</span><span>End</span></div>
-  </div>
 
   <div class="colophon">
     <span>&ldquo;The One Who Let You Go&rdquo; &middot; Written by Keith Adler (BMI, IPI&nbsp;551038589) &middot; Performed by Marty Gregg &middot; The Aura Principle Soundtrack &middot; &copy;&nbsp;2026 Keith Adler &middot; Music <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-NC&nbsp;4.0</a></span>
@@ -622,26 +627,7 @@
 
     { at:0.531, t:'A scratch is spread thin on purpose',
       b:'Cross-Interleaved Reed-Solomon scatters each moment of audio across a long stretch of track, so physical damage arrives at the decoder as many isolated errors instead of one fatal block. A CD fully corrects a burst of about <b>4,000 bits of audio</b> &mdash; 8,500 channel bits, roughly <b>2.4 mm</b> of track &mdash; and interpolates through to about 8 mm. <b>Drag the damage</b> and find the edges.',
-      cap:'Deinterleaving turns one gouge into scattered specks',
-      d: (function(){
-        var cells='', i;
-        for (i=0;i<40;i++){
-          var bad = (i>=14 && i<=21);
-          cells += '<rect x="'+(10+i*10)+'" y="34" width="8" height="20" rx="1" fill="'+(bad?'#E8674F':'var(--rule)')+'"/>';
-        }
-        var scat='', hit=[2,7,11,16,20,25,31,36];
-        for (i=0;i<40;i++){
-          var b2 = hit.indexOf(i)>=0;
-          scat += '<rect x="'+(10+i*10)+'" y="110" width="8" height="20" rx="1" fill="'+(b2?'#E8674F':'var(--rule)')+'"/>';
-        }
-        return fig(
-          tx(10,26,'AS WRITTEN ON THE DISC &mdash; ONE 2.5 mm SCRATCH','9','#E8674F') + cells +
-          '<line x1="200" y1="66" x2="200" y2="96" stroke="var(--ink-faint)"/>' + head(200,96,90) +
-          tx(210,86,'deinterleave','9','var(--ink-dim)') +
-          tx(10,102,'AS THE DECODER SEES IT &mdash; ISOLATED, EVERY ONE CORRECTABLE','9','var(--brass)') + scat +
-          tx(10,152,'same eight errors, none of them adjacent','9','var(--ink-faint)'));
-      })() },
-
+      cap:'Drag the damage and find the edges', fn:'circ' },
     { at:0.598, t:'How small 1.6 micrometers is',
       b:'A number in micrometers means nothing until you stand something next to it. <b>44 tracks fit across one human hair.</b> The pit is narrower than the wavelength of red light, and its depth &mdash; 0.125 &micro;m &mdash; is smaller than most viruses. This is why a CD is stamped from a mold rather than cut: nothing mechanical can be steered that finely, so the shape is pressed in and read with light that is bigger than the thing it is reading.',
       cap:'Everything here is drawn to one log scale',
@@ -682,7 +668,22 @@
       })() },
     { at:0.664, t:'Left and right share one stream',
       b:'There is one spiral and one pit stream; the channels are multiplexed inside it. Every frame carries 24 bytes of audio &mdash; <b>six left samples and six right, alternating L R L R L R</b>. CIRC then pulls them deliberately apart: even and odd samples of a channel are delayed against each other and spread over roughly <b>108 frames</b>, so a burst that kills one sample usually leaves the samples either side of it intact and the decoder interpolates across the hole. <b>A caution about the disc above:</b> it draws left toward the hub and right toward the rim. That is a reading aid I chose, not physics. There is no left side of a groove.',
-      cap:'One stream, two channels, then scattered on purpose', fn:'circ' },
+      cap:'One stream, two channels, then scattered on purpose',
+      d: fig(
+        tx(10,20,'INSIDE ONE FRAME &mdash; 24 BYTES OF AUDIO','9','var(--ink-dim)') +
+        (function(){ var r='', i; for(i=0;i<12;i++){
+            var L = i%2===0;
+            r += '<rect x="'+(10+i*33)+'" y="30" width="30" height="26" rx="2" fill="'+(L?'#22A8D6':'#E8548F')+'" fill-opacity=".8"/>';
+            r += tx(25+i*33,48,L?'L':'R','12','#0A0C11','middle');
+          } return r; })() +
+        tx(10,72,'6 left + 6 right, alternating, 16 bits each','9','var(--ink-faint)') +
+        tx(10,102,'THEN CIRC SPREADS THEM OVER ~108 FRAMES','9','var(--brass)') +
+        (function(){ var r='', i, xs=[14,58,102,146,190,234,278,322,366];
+          for(i=0;i<9;i++){
+            r += '<line x1="'+(30+i*8)+'" y1="110" x2="'+xs[i]+'" y2="128" stroke="var(--ink-faint)" stroke-opacity=".45"/>';
+            r += '<rect x="'+(xs[i]-5)+'" y="128" width="10" height="18" rx="1.5" fill="'+(i%2?'#E8548F':'#22A8D6')+'" fill-opacity=".7"/>';
+          } return r; })() +
+        tx(210,162,'NEIGHBORS IN TIME, FAR APART ON THE DISC','9','var(--ink-faint)','middle')) },
     { at:0.731, t:'44.1 kHz came from television',
       b:'Early digital masters were stored on video recorders, so the sample rate had to fit a TV frame. Three samples per line &times; 245 active lines &times; 60 fields gives <b>44,100</b> for NTSC &mdash; and 3 &times; 294 &times; 50 gives exactly the same number for PAL. The rate is an artifact of broadcast video, not of audio theory. <b>Drag the tone past 22.05 kHz</b> and watch it fold back into something lower &mdash; that is why a CD filters everything above 20 kHz before it ever samples.',
       cap:'One number that fits both broadcast standards', fn:'sampling' },
